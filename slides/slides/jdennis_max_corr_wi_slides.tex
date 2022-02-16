@@ -1,0 +1,2297 @@
+
+\input{./header_beamer.tex}
+\input{./header_commands.tex}
+
+
+\title[Id Robust Max Corr Test] % (optional, only for long titles)
+{Weak Identification in a White Noise Test
+% Bootstrapping an Identification Robust Max Correlation White Noise Test 
+% for Weakly Dependent Time Series
+}
+\author[Jay Dennis] % (optional, for multiple authors)
+{Jay Dennis
+}
+\institute[UNC-CH]{UNC Chapel Hill, Economics \\ \href{http://jaydennis.web.unc.edu/Research/}{\color{blue} Current Version}}
+\date[\today] % (optional)
+{\today}
+
+
+\begin{document}
+
+\begin{frame}[noframenumbering]
+\titlepage
+\begin{center}
+\small
+\end{center}
+\end{frame}
+
+
+
+\section{Introduction}
+
+
+% \frame{
+% \frametitle{Introduction - Weak Identification Robust Max Correlation Test}
+% There are 3 key components:
+% \begin{itemize}%[<+-| alert@+>]
+% \setlength{\itemsep}{.25cm}
+% \item White Noise Test
+% \item Identification Robust
+% \item using the Maximum correlation
+% \begin{itemize}
+% \item with a bootstrap
+% \end{itemize}
+% \end{itemize}
+% }
+
+\frame{
+\frametitle{Overview}
+\begin{itemize}
+\setlength\itemsep{.25cm}
+\item Parameter identification failure $\Rightarrow$ nonstandard estimator distributions
+\vspace*{-.25cm}
+\begin{itemize}
+\item affects testing on the parameters
+\end{itemize}
+
+\item \highlight{Point 1}: What happens to \textit{White Noise tests} based on estimated models when parameters are near identification failure?
+\begin{itemize}
+\item the nonstandardness propagates to our test statistic for serial correlation.
+\item Ignoring identification failure can lead to distorted inference:
+\end{itemize}
+%\input{./sim_observations/ARMA/arma_garch_size_distortion.tex}
+ \begin{table}[H] 
+ \small 
+ \centering 
+\begin{tabular}{ccc} 
+% \hline 
+ & Traditional Test & This Test \\ 
+ \hline 
+ $(\alpha=0.05)$ & 0.096 &  0.050 \\ 
+ \hline 
+% & & \\
+\multicolumn{3}{c}{ \tiny Rejection Frequencies, ARMA-GARCH, $T=100$, Weak Id, Max Correlation Test} \\ 
+% \multicolumn{3}{c}{ $T=100$, $J=500$ } \\ 
+\end{tabular}
+ \end{table}
+
+\item \highlight{Point 2}: What do we do when standard methods fail?
+% \begin{itemize}
+% \item We provide a procedure that leads to correct inference
+% \item Use max correlation, but method applies to others
+% \end{itemize}
+%\item We develop a bootstrap procedure for inference depending upon whether identification failure is present or not
+%\item Inference based on our procedure is robust to the behavior resulting from identification failure
+\end{itemize}
+}
+
+
+
+
+% \frame{
+% \frametitle{Why do we care about Serial Correlation?}
+% Put further questions in an appendix slide - talk about the ARMA model there (e.g. Valentin's question)
+% }
+
+
+
+\frame{
+\frametitle{Introduction}
+\begin{center}
+\begin{figure}[H]
+\includegraphics[scale=.4]{../fig/Intro_Picture.png}
+\end{figure}
+\end{center}
+}
+
+
+\frame{
+\frametitle{Introduction}
+\begin{itemize}
+\setlength\itemsep{.25cm}
+\item This presentation lives in the world of Model Diagnostics
+\item Focus on White Noise Tests:
+\begin{itemize}
+\setlength\itemsep{.25cm}
+\item Does the model capture the dependence in the data?
+\item (Data, Model, Parameter Estimates) $\Rightarrow$ Residuals $\hat{\e}$
+\item Examine Correlations: $\hat{\rho}(h) = \frac{1}{n} \sum_{t=h}^{n} \hat{\e}_{t-h} \hat{\e}_{t} / \frac{1}{n} \sum_{t=0}^{n} \hat{\e}_{t}^2$
+
+\item Aggregate across many lags:
+\item Q-Test: $T(\hat{\theta}, X_{n}) = \frac{1}{h} \sum_{h=1}^{H} \sqrt{n} \hat{\rho}(h)$
+\item Max Corr Test: $T(\hat{\theta}, X_{n}) = \max_{1\le h \le H} | \sqrt{n} \hat{\rho}(h)|$
+\end{itemize}
+\end{itemize}
+}
+
+
+
+\frame[label = intro_lit_review]{
+\frametitle{Introduction}
+\begin{itemize}
+\setlength\itemsep{.25cm}
+\item Traditional methods require `standard features' in the Data and Model
+\item Identification Failure violates these standard assumptions
+\begin{itemize}
+\setlength\itemsep{.25cm}
+\item[$\Rightarrow$] Features are no longer standard
+\item[$\Rightarrow$] Traditional methods do not work as expected 
+\end{itemize}
+\vspace*{.5cm}
+\item Today:
+\begin{itemize}
+\setlength\itemsep{.25cm}
+\item How do we determine if there is a problem?
+\item What can we do about it?
+\end{itemize}
+\end{itemize}
+\vfill \hfill
+\hyperlink{related_literature}{\beamergotobutton{Related Literature}}
+}
+
+
+
+
+
+
+
+
+\section{Characterizing the Issue}
+\addtocounter{framenumber}{-1}
+\frame{
+\frametitle{Outline}
+\tableofcontents[ 
+	currentsection, 
+    %currentsubsection, 
+    hideothersubsections, 
+    %sectionstyle=show/hide, 
+    %subsectionstyle=show/shaded, 
+    ] 
+}
+
+
+
+\frame{
+\frametitle{Identification Failure?}
+Consider the ARMA(1,1) model:
+\begin{align*}
+y_{t} = \gamma y_{t-1} + \e_{t} - \pi \e_{t-1} \hspace*{1cm} \e_{t} \sim iid(0,1)
+\end{align*}
+Imagine $y_{t}$ carries no dependence.
+\begin{itemize}
+\item Typically we assume this means $\gamma = 0$, $\pi = 0$.
+\item But in general $\gamma = \pi \ne 0$ $\Rightarrow$ no dependence.
+\end{itemize}
+
+\begin{itemize}
+\item The general case is called the `Common Roots Problem.'  
+
+\vspace*{.5cm}
+\item We typically assume this problem away because it prevents identification of $\gamma$ and $\pi$.
+
+\item However, there are common situations in which this may be an issue.
+\end{itemize}
+}
+
+
+\frame[label = identification_is_a_real_issue]{
+\frametitle{Identification Failure?}
+\begin{itemize}
+\item \cite{PoterbaSummers1988,Taylor2005}
+\begin{itemize}
+\item exploit low levels of dependence in returns?
+\item trading rule based on ARMA(1,1) model of returns
+\end{itemize}
+
+\item Set $\gamma = \beta + \pi$ to focus on identification of $\pi$.
+\hfill 
+\hyperlink{ARMA_0}{\beamergotobutton{ARMA}}
+
+\item $\pi$ is not identified when $\beta = 0$ $\Leftarrow$ {\color{blue} $y_{t} = (\beta + \pi) y_{t-1} + \e_{t} - \pi \e_{t-1}$}
+
+\input{../fig/empirical/empirical_VWRETD_monthly_beta.tex}
+
+% \pause
+\item We don't know if $\beta = 0$ or not.
+
+\item $\beta$ appears to be `close' to 0 
+\begin{itemize}
+\item \textbf{even being close can be problematic.}
+\end{itemize}
+\end{itemize}
+}
+
+
+
+
+
+
+\frame[label = ARMA_beta_hat_id1]{
+\frametitle{Identification Failure for a Parameter}
+Identification failure leads to non-standard distributions:
+
+\hspace*{-1cm}
+% \begin{tabular}{cc}
+% \includegraphics[scale=.16]{./fig/ARMA_beta_hat_id1_J10000.png} &
+% \includegraphics[scale=.16]{./fig/ARMA_beta_hat_id2_J10000.png} \\
+% Close to Unidentified & Identified
+% \end{tabular}
+\includegraphics[scale=.35]{../fig/beta_hat_i1.png}
+
+\vspace*{.25cm}
+\begin{itemize}
+\item 
+$\Rightarrow$ Non-standard Inference!
+\hfill 
+%\hyperlink{STAR_beta_hat_id1}{\beamergotobutton{STAR(1) $\hat{\beta}_{n}$}}
+\hyperlink{ARMA_beta_hat_id0}{\beamergotobutton{ARMA(1,1) $\hat{\beta}_{n}$, non-id}}
+
+%\vspace*{.25cm}
+%\item Current inference relies on calculation of distributions \citep{AndrewsPloberger1996,AndrewsCheng2012,Cheng2015}
+
+%\item We will bootstrap
+\end{itemize}
+}
+
+
+
+\frame[label = ARMA_use_motivation]{
+\frametitle{Identification Failure in our Test}
+\begin{itemize}
+\item Imagine we want to use the ARMA model to inform a trading rule \citep{Taylor2005}.  
+
+\hfill
+\hyperlink{id_robust_models}{\beamergotobutton{Other Uses}}
+
+\vspace*{1cm}
+\item We want to know if the ARMA model adequately describes our data.
+
+\vspace*{1cm}
+\item Test for serial correlation in the \textbf{residuals}: 
+\begin{itemize}
+\item If we detect serial correlation in the residuals, then our model must not be characterizing some dependence.  
+\end{itemize}
+\end{itemize}
+}
+
+
+
+
+
+
+
+
+
+\frame[label = test_first_order_expansion]{
+\frametitle{Identification Failure in our Test}
+\begin{itemize}
+\setlength\itemsep{.25cm}
+\item Note: \textit{We are not testing the parameter values!}
+\item But our test does use the residuals from the estimated model
+\item We must account for the influence of model estimation on our test statistic:
+%Proving the limiting distribution of and bootstrapping the test statistic involves an expansion that includes these estimator distributions:
+\begin{align*}
+% \hat{\Tc}_n \equiv \hat{\Tc}_n(\hat{\theta}_n) 
+% = \hat{\Tc}_n(\theta_{n}^*) + \underbrace{\sqrt{n}(\hat{\theta}_n - \theta_{n}^*)}_{\text{\highlight{Non-standard}}} \hat{\D}_n + o_{p}(1) 
+\hat{\Tc}_n \equiv \hat{\Tc}_n(\hat{\theta}_n) 
+= \hat{\Tc}_n(\theta^*) + \underbrace{\sqrt{n}(\hat{\theta}_n - \theta^*)}_{\text{\highlight{Non-standard}}} \hat{\D}_n + o_{p}(1) 
+\end{align*}
+
+\item `Non-standardness' can be felt beyond inference on the parameter values!
+
+\end{itemize}
+
+% \vfill \hfill
+% \hyperlink{related_literature}{\beamergotobutton{Related Literature}}
+}
+
+
+\frame{
+\frametitle{Identification Failure in our Test}
+\hspace*{-1.2cm}
+% \begin{tabular}{ll}
+% \includegraphics[scale=.18]{../fig/MC_hat_i1_Ln2.png} &
+% \hspace*{-1.5cm}
+\includegraphics[scale=.35]{../fig/MC_hat_i3_Ln2.png}
+% \end{tabular}
+\vfill
+% \vspace*{-.5cm}
+\begin{center}
+\textit{We show how to correctly conduct inference.}
+\end{center}
+}
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \section{Identification Framework}
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \section{Max Tests}
+
+
+
+
+
+
+
+
+
+
+% % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % %
+
+\section{White Noise Test}
+\addtocounter{framenumber}{-1}
+\frame{
+\frametitle{Outline}
+\tableofcontents[ 
+	currentsection, 
+    %currentsubsection, 
+    hideothersubsections, 
+    %sectionstyle=show/hide, 
+    %subsectionstyle=show/shaded, 
+    ] 
+}
+
+
+
+\frame[label = white_noise_test_recap]{
+\frametitle{White Noise Test}
+\begin{itemize}%[<+->] %[<+-| alert@+>]
+\setlength\itemsep{.25cm}
+% \item Does the model capture serial correlation in the data?
+\item We want to test if $\{\e_t\}$ is serially correlated:
+\begin{align*}
+H_0: \underbrace{\rho(h) = 0 \ \forall h \in \N}_{\text{No Serial Correlation}} 
+\hspace*{.5cm} \text{ vs. } \hspace*{.5cm} 
+H_{A}: \rho(h) \ne 0 \ \text{ for some } h \in \N 
+\end{align*}
+
+\vspace*{.25cm}
+\item (Data, Model, Parameter Estimates) $\Rightarrow$ Residuals $\hat{\e}$
+\hfill 
+\hyperlink{ARMA_0}{\beamergotobutton{ARMA}}
+% \hspace*{.25cm}
+% \hyperlink{STAR_0}{\beamergotobutton{STAR}}
+
+\vspace*{.5cm}
+\item We test residuals using the max correlation statistic 
+\[\hat{\Tc}_n = \max_{1\le h \le \Le_n} |\sqrt{n} \hat{\rho}_n(h)|\]
+where $\hat{\rho}(h) = \frac{1}{n} \sum_{t=h}^{n} \hat{\e}_{t-h} \hat{\e}_{t} / \frac{1}{n} \sum_{t=0}^{n} \hat{\e}_{t}^2$
+\end{itemize}
+
+\vfill
+\hfill 
+\hyperlink{max_tests_explanation_slide}{\beamergotobutton{Max Tests?}}
+
+%\hfill 
+%\hyperlink{slide_for_Valentin}{\beamergotobutton{Why not use Taylor?}}
+
+\hfill 
+\hyperlink{max_test_comments}{\beamergotobutton{Comments}}
+}
+
+
+% \frame[label = white_noise_test_recap]{
+% \frametitle{White Noise Test}
+% \begin{itemize}%[<+->] %[<+-| alert@+>]
+% \setlength\itemsep{.25cm}
+% \item We have a model with a \textbf{known} source of identification failure: 
+% 
+% \hfill 
+% \hyperlink{ARMA_0}{\beamergotobutton{ARMA}}
+% \hspace*{.25cm}
+% \hyperlink{STAR_0}{\beamergotobutton{STAR}}
+% 
+% \[ \e_t(\theta_0) \equiv \e_t\]
+% 
+% \item We want to test if $\{\e_t\}$ is a white noise process:
+% \begin{equation*}
+% H_0: \rho(h) = 0 \ \forall h \in \N \ \text{ vs. } \ H_{A}: \rho(h) \ne 0 \ \text{ for some } h \in \N 
+% \end{equation*}
+% where $\rho(h) = E(\e_t \e_{t-h}) / E(\e_t^2)$.
+% 
+% \item We test residuals using the sample max correlation statistic 
+% \[\hat{\Tc}_n = \max_{1\le h \le \Le_n} |\sqrt{n} \hat{\rho}_n(h)|\]
+% \end{itemize}
+% 
+% \vfill
+% \hfill 
+% \hyperlink{max_tests_explanation_slide}{\beamergotobutton{Max Tests?}}
+% 
+% %\hfill 
+% %\hyperlink{slide_for_Valentin}{\beamergotobutton{Why not use Taylor?}}
+% 
+% \hfill 
+% \hyperlink{max_test_comments}{\beamergotobutton{Comments}}
+% }
+
+
+
+%\subsection{Critical Values}
+
+\frame[label = critical_values_short_slide]{
+\frametitle{Critical Values}
+
+Recall 2 distributions 
+\hyperlink{Test_stat_theorem}{\beamergotobutton{Theory}}
+
+\begin{itemize}
+\item We don't know which is correct - must bootstrap each individually
+\hyperlink{bootstrap_procedure}{\beamergotobutton{ Bootstrap Procedure}}
+
+\item 2 different critical values - How to combine them?
+
+\item ICS - Use data to determine if parameter is identified
+\hyperlink{robust_cvs}{\beamergotobutton{ICS Details}}
+
+\begin{itemize}
+\item if so, then use identified cv
+\item if not, take the larger of the 2 cvs
+\end{itemize}
+\end{itemize}
+
+
+Test Properties
+\begin{itemize}
+\item Correct Asymptotic Size {\small (largest rejection probability under the null is $\alpha$)}
+\hyperlink{theory_correct_asym_size}{\beamergotobutton{Theory}}
+
+\item Consistent {\small (Under Alternative, probability of rejecting null $\to 1$)}
+\hyperlink{theory_test_consistency}{\beamergotobutton{Theory}}
+\end{itemize}
+
+This is good, but how does it do in practice?
+
+%\vfill \hfill \hyperlink{critical_values_short_slide}{\beamergotobutton{Return to CV slide}}
+}
+
+
+
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\section{Simulations}
+
+\addtocounter{framenumber}{-1}
+\frame{
+\frametitle{Outline}
+\tableofcontents[ 
+	currentsection, 
+    %currentsubsection, 
+    hideothersubsections, 
+    %sectionstyle=show/hide, 
+    %subsectionstyle=show/shaded, 
+    ] 
+}
+
+
+
+
+
+\frame{
+\frametitle{Monte Carlo Simulations}
+Today, I discuss tests based on 
+\begin{itemize}
+%\item $LF$ 
+\item $ICS$: Robust Test with data driven identification category selection
+\item $S$: Tests that ignore identification failure
+% \item (note: each are modified to allow for residuals)
+%\item $NoX$: Ignore model estimation/residuals  
+\end{itemize}
+
+\vspace*{1cm}
+for the following tests
+\begin{itemize}
+\item (MC): Max Correlation Test 
+\item (LBQ): \pcite{Hong1996} Standardized Ljung-Box Q test,
+% \item (CvM): \pcite{Shao2011} Cram{\'e}r von Mises Test, 
+\item (supLM): \pcite{NankervisSavin2010} representation of \pcite{AndrewsPloberger1996} sup-LM test
+\end{itemize}
+%\vfill \hfill \hyperlink{sim_model_setup}{\beamergotobutton{Return to Simulation Setup}}
+}
+
+
+
+\frame{
+\frametitle{Summary of Simulation Results}
+%Summary of Simulation Results
+\begin{itemize}
+\item Benchmark: Infeasible Tests - We know the true value of the unidentified parameters
+\item Real World: Feasible Tests - Must evaluate over a grid of nuisance parameters
+\end{itemize}
+
+\begin{itemize}
+\setlength{\itemsep}{10pt}
+%\item ARMA(1,1) % and STAR(1)
+\item Good size and power for infeasible tests
+
+\item %ARMA(1,1) model 
+When truth is near identification failure: 
+
+\begin{itemize}
+\setlength{\itemsep}{10pt}
+\item Tests ignoring the identification issue are over-sized
+
+\item Robust tests control size well
+
+\item Current issue: Nuisance parameters $\Rightarrow$ low empirical power in  \highlight{feasible} tests...
+\end{itemize}
+\end{itemize}
+
+}
+
+
+
+\frame[label = sim_model_setup]{
+\frametitle{Monte Carlo Simulations - Setup}
+\begin{table}[H]
+\centering
+\begin{tabular}[H]{ll}
+%STAR(1): & $y_{t} = \frac{\highlight{\beta_n} y_{t-1}}{1+ \exp({\color{blue} -10}(y_{t-1} - \highlight{0}))} + \highlight{.5} y_{t-1} + \e_{t}$ \\
+% & \\
+%{\small Misspecified STAR(2):} & $y_{t} = \frac{\highlight{\beta_n} y_{t-1}}{1+ \exp(-10(y_{t-1} - \highlight{0}))} + \highlight{.5} y_{t-1} + {\color{cyan} \frac{.15}{\sqrt{n}}} y_{t-2} + \e_{t}$ \\
+% & \\
+ARMA(1,1): & $y_{t} = (\highlight{\beta_n} + \highlight{.5})y_{t-1} + \e_{t} - \highlight{.5} \e_{t-1}$
+\end{tabular}
+\end{table}
+
+with $\beta_n \in \{0, \highlight{.3 / \sqrt{n}}, \highlight{.3} \}$.
+Let $\nu_{t} \sim$ iid $N(0,1)$.  % Then for $\e_{t}$:
+
+\begin{table}[H]
+\centering
+\begin{tabular}[H]{ll}
+\multicolumn{2}{c}{$H_0$ (No Serial Correlation)} \\
+\hline
+iid:          & $\e_{t} = \nu_{t}$ \\
+GARCH(1,1):   & $\e_{t} = \sigma_t \nu_{t}$, \\
+              & $\sigma_t^2 = 1 + .3 \e_{t-1}^2 + .6 \sigma_{t-1}^2$ \\
+% Bilinear:     & $\e_{t} = .5 \e_{t-1} \nu_{t-1} +  \nu_{t}$ \\
+\hline
+\end{tabular}
+\end{table}
+\vspace*{-.25cm}
+\begin{table}[H]
+\centering
+\begin{tabular}[H]{ll}
+\multicolumn{2}{c}{$H_A$ (Serial Correlation Present)} \\
+\hline
+AR(2):   & $\e_{t} = .5 \e_{t-2} + \nu_{t}$ \\
+%MA(1):   & $\e_{t} = .5 \nu_{t-1} + \nu_{t}$ \\
+MA(10):  & $\e_{t} = .5 \nu_{t-10} + \nu_{t}$ \\
+\hline
+\end{tabular}
+% \begin{tabular}[H]{ll}
+% \multicolumn{2}{c}{$H_A$} \\
+% \hline
+% MA(21):  & $\e_{t} = .5 \nu_{t-21} + \nu_{t}$ \\
+% MA(50):  & $\e_{t} = .5 \nu_{t-50} + \nu_{t}$ \\
+% %MA(100):  & $\e_{t} = .5 \nu_{t-100} + \nu_{t}$ \\
+% \hline
+% \end{tabular}
+\end{table}
+\vfill \hfill \hyperlink{sim_details}{\beamergotobutton{Simulation Details}}
+}
+
+
+
+% \frame[label = STAR_sims_0]{
+% \frametitle{Simulations - Initial Observations}
+% \begin{itemize}
+% \item Initial Observations:
+% \begin{itemize}
+% %\item NoX performs poorly, as expected
+% \item LF based tests tend to be overly conservative when the truth is strong identification 
+% \item LF performs well when truth is near identification failure.
+% %\hyperlink{star_sim_LF}{\beamergotobutton{LF}}
+% \item In general, ICS based tests perform well
+% \end{itemize}
+% \end{itemize}
+% }
+
+%\frame{
+%\frametitle{Simulations - Initial Observations}
+%\input{./sim_observations/NoX.tex}
+%}
+
+
+
+%
+%
+%
+%
+%
+%
+%
+
+
+% \frame[label = ARMA_sims]{
+% \frametitle{\highlight{REMOVE SLIDE!} - ARMA Simulations}
+% \begin{itemize}
+% \item Size ($H_{0}$ true):
+% \begin{itemize}
+% % \item Shrinkage is not noticeable
+% 
+% \item iid, GARCH errors: 
+% \begin{itemize}
+% \item ICS controls size well 
+% % \hyperlink{arma_garch_strong_Ln5}{\beamergotobutton{GARCH}}
+% \item MC ICS statistics are close to nominal for all id truths 
+% \end{itemize}
+% 
+% \item Truth near identification failure: Size distortions are noticeable for MC,LBQ,sup LM - S based statistics
+% 
+% % \item CvM tends to be overly conservative
+% 
+% % \item bilinear errors:
+% % \begin{itemize}
+% % \item near identification failure: MC ICS is close to nominal at low lags, and size distortions appear at higher lags
+% % \item strong identification: all tests are overly conservative
+% % \end{itemize}
+% 
+% \end{itemize}
+% 
+% %\vspace{.3cm}
+% \item Infeasible Power ($H_{0}$ false):
+% \begin{itemize}
+% \item ICS based tests comparable to S based tests for all id cases
+% 
+% \item AR(2): MC tests have moderately larger rejection frequencies
+% 
+% \item MA(10): MC and LBQ have large rf, sup LM and CvM are very low
+% % \hyperlink{arma_ma10_weak_Ln10}{\beamergotobutton{MA(10), weak id}}
+% % \hyperlink{arma_ma10_strong_Ln10}{\beamergotobutton{MA(10), strong id}}
+% \end{itemize}
+% 
+% \item Feasible Power ($H_{0}$ false, accounting for nuisance parameters): 
+% \begin{itemize}
+% \item near identification failure: ICS rejections are low, nontrivial for MC, LBQ
+% \item strong identification: ICS, S are comparable
+% \end{itemize}
+% 
+% \end{itemize}
+% \hfill \hyperlink{STAR_sims}{\beamergotobutton{STAR sims}}
+% }
+
+
+
+\frame[label = ARMA_sims_T100]{
+\frametitle{ARMA Simulations}
+\input{../fig/sims/RF_cv_dgp3_id2_T100_f0_a5.tex}
+\vspace*{-.5cm}
+\input{../fig/sims/RF_cv_dgp3_id1_T100_f0_a5.tex}
+\vspace*{-.75cm}
+\hfill
+% \hyperlink{ARMA_sims_T500}{\beamergotobutton{ARMA Sims, T=500}}
+}
+
+
+
+\addtocounter{framenumber}{-1}
+\frame[label = ARMA_sims_T100]{
+\frametitle{ARMA Simulations}
+\input{../fig/sims/RF_cv_dgp3_id2_T100_f0_a5_2.tex}
+\vspace*{-.5cm}
+\input{../fig/sims/RF_cv_dgp3_id1_T100_f0_a5.tex}
+\vspace*{-.75cm}
+\hfill
+% \hyperlink{ARMA_sims_T500}{\beamergotobutton{ARMA Sims, T=500}}
+}
+
+
+\addtocounter{framenumber}{-1}
+\frame[label = ARMA_sims_T100]{
+\frametitle{ARMA Simulations}
+\input{../fig/sims/RF_cv_dgp3_id2_T100_f0_a5_3.tex}
+\vspace*{-.5cm}
+\input{../fig/sims/RF_cv_dgp3_id1_T100_f0_a5.tex}
+\vspace*{-.75cm}
+\hfill
+% \hyperlink{ARMA_sims_T500}{\beamergotobutton{ARMA Sims, T=500}}
+}
+
+
+\addtocounter{framenumber}{-1}
+\frame[label = ARMA_sims_T100]{
+\frametitle{ARMA Simulations}
+\input{../fig/sims/RF_cv_dgp3_id2_T100_f0_a5.tex}
+\vspace*{-.5cm}
+\input{../fig/sims/RF_cv_dgp3_id1_T100_f0_a5_2.tex}
+\vspace*{-.75cm}
+\hfill
+% \hyperlink{ARMA_sims_T500}{\beamergotobutton{ARMA Sims, T=500}}
+}
+
+
+\addtocounter{framenumber}{-1}
+\frame[label = ARMA_sims_T100]{
+\frametitle{ARMA Simulations}
+\input{../fig/sims/RF_cv_dgp3_id2_T100_f0_a5.tex}
+\vspace*{-.5cm}
+\input{../fig/sims/RF_cv_dgp3_id1_T100_f0_a5_3.tex}
+\vspace*{-.75cm}
+\hfill
+% \hyperlink{ARMA_sims_T500}{\beamergotobutton{ARMA Sims, T=500}}
+}
+
+
+\addtocounter{framenumber}{-1}
+\frame[label = ARMA_sims_T100]{
+\frametitle{ARMA Simulations}
+\input{../fig/sims/RF_cv_dgp3_id2_T100_f0_a5.tex}
+\vspace*{-.5cm}
+\input{../fig/sims/RF_cv_dgp3_id1_T100_f0_a5_4.tex}
+\vspace*{-.75cm}
+\hfill
+% \hyperlink{ARMA_sims_T500}{\beamergotobutton{ARMA Sims, T=500}}
+}
+
+
+\addtocounter{framenumber}{-1}
+\frame[label = ARMA_sims_T100]{
+\frametitle{ARMA Simulations}
+\input{../fig/sims/RF_cv_dgp3_id2_T100_f0_a5.tex}
+\vspace*{-.5cm}
+\input{../fig/sims/RF_cv_dgp3_id1_T100_f0_a5_5.tex}
+\vspace*{-.75cm}
+\hfill
+% \hyperlink{ARMA_sims_T500}{\beamergotobutton{ARMA Sims, T=500}}
+}
+
+
+
+
+%
+%
+%
+
+
+\section{Empirical Example}
+\addtocounter{framenumber}{-1}
+\frame{
+\frametitle{Outline}
+\tableofcontents[ 
+	currentsection, 
+    %currentsubsection, 
+    hideothersubsections, 
+    %sectionstyle=show/hide, 
+    %subsectionstyle=show/shaded, 
+    ] 
+}
+
+
+
+\frame[label = EmpiricalExampleStart]{
+\frametitle{Empirical Example}
+\begin{itemize}
+\item Predictability of stock returns is an active area of research
+\begin{itemize}
+\item Previous research examines serial correlation in raw return series \citep{CampbellLoMacKinlay1997,NankervisSavin2010}
+% \item \cite{CampbellLoMacKinlay1997} use BP tests to analyze serial correlation in stock return indices
+% \item \cite{NankervisSavin2010}: reproduce CLM analysis with their sup LM test
+\item limitation: not appropriate for residuals from an ARMA model
+\end{itemize}
+
+\item Exploit low levels of dependence in returns
+\item trading rule based on ARMA(1,1) model of returns \citep{Taylor2005}
+
+\item I demonstrate this test as a test of model adequacy
+\end{itemize}
+
+\vspace*{1cm}
+data \citep{CampbellLoMacKinlay1997,NankervisSavin2010}: 
+\begin{itemize}
+\item CRSP Value-Weighted NYSE/AMEX stock return indices
+\item Monthly between July 1962 - December 2005
+\end{itemize}
+\vfill
+\hfill
+\hyperlink{NankervisSavin2010table}{\beamergotobutton{Nankervis \& Savin (2010)}}
+}
+
+
+\frame[label = empirical_VWRETD_monthly]{
+\frametitle{Empirical Example}
+\input{../fig/empirical/empirical_VWRETD_monthly_beta.tex}
+\vspace*{-.5cm}
+\input{../fig/empirical/empirical_VWRETD_monthly_1.tex}
+\vfill
+\hfill
+% \hyperlink{empirical_VWRETD_annual}{\beamergotobutton{VWRETD Annual}}
+}
+
+
+\frame{
+\frametitle{Conclusion}
+\begin{itemize}
+\item Parameter identification failure induces non-standard estimator distributions
+\vspace*{1cm}
+\item This non-standardness affects the distribution of the white noise test statistic in estimated models
+\vspace*{1cm}
+\item We can simulate the correct distribution for inference
+\end{itemize}
+}
+
+
+
+
+
+% \frame{
+% \frametitle{Next Time...}
+% \begin{itemize}
+% \item Add explanations for motivating economic examples.
+% \item relegate some of the literature to the appendix
+% \item Illustrate distortion caused by classic inference under weak id.
+%\item add in Seo and Shin (2016) extension as an example
+% \end{itemize}
+% }
+
+
+
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+
+\beginbackup
+
+\frame{
+\begin{center}
+\LARGE Thank You!
+\end{center}
+}
+
+
+\section*{References}
+% % REFERENCES
+\frame[allowframebreaks]{
+\frametitle{References}
+\tiny
+\bibliographystyle{ecta}
+\bibliography{../../ref_max_test_weak_id}
+}
+
+
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % %
+
+
+\section*{Appendix}
+\frame{
+\frametitle{Appendix Slides follow}
+\begin{center}
+Appendix Slides follow
+\end{center}
+}
+
+
+
+
+
+ \frame[label = related_literature]{
+ \frametitle{Related Literature}
+ We build on ideas from many research areas:
+ \begin{itemize}%[<+-| alert@+>]
+ \setlength\itemsep{.25cm}
+ \item White noise tests:
+
+ {\small \citep{Hong1996,AndrewsPloberger1996,Shao2011,NankervisSavin2012,XiaoWu2014,HillMontegi2016_white_noise}}
+ 
+ \item Weak Identification/Parametric Identification Failure:
+ 
+ {\small \citep{AndrewsCheng2012,AndrewsCheng2013,AndrewsCheng2014,Cheng2015}},
+ 
+ \item Max Tests: % and Extreme Value Theory: 
+ 
+ {\small %\citep{FisherTippett1928,deHaan1976,Chernozhukov_etal2013,Chernozhukov_etal2016,ZhangCheng2017,ZhangWu2017,HillMontegi2016_white_noise,HillMontegi2016_many_zeros,Hansen2005_JBES}
+\citep{Chernozhukov_etal2013,Chernozhukov_etal2016,ZhangCheng2017,ZhangWu2017,HillMontegi2016_white_noise,HillMontegi2016_many_zeros,Hansen2005_JBES}
+}
+ 
+ \item The Dependent Wild Bootstrap:
+ 
+ {\small \citep{Shao2010,Shao2011}}.
+ 
+ \item Testing for serial correlation when there is weak identification in the model estimation step is new.
+ \end{itemize}
+
+\vfill \hfill
+\hyperlink{intro_lit_review}{\beamergotobutton{Return}}
+ }
+
+
+
+
+
+\frame[label = NankervisSavin2010table]{
+\frametitle{Empirical Example: \cite{NankervisSavin2010}}
+\input{../fig/empirical/NankervisSavin2010.tex}
+\begin{itemize}
+\item Tests \textit{directly on the unfiltered returns} suggests that there may be some dependence that can be modeled here
+\item Let's model these series with an ARMA(1,1) and run diagnostics
+\end{itemize}
+\vfill
+\hfill
+\hyperlink{EmpiricalExampleStart}{\beamergotobutton{Return to Empirical Example}}
+}
+
+
+
+
+\subsection*{Example Models}
+
+\frame[label = id_robust_models]{
+\frametitle{Identification Failure - Economic Models}
+%\hyperlink{id_robust_models}{\beamergotobutton{Return to example models}}
+\begin{itemize} %[<+->]
+\setlength\itemsep{.25cm}
+\item Many commonly used models in Economics can have parameter identification failure.
+
+\item Today, we focus on the 
+\hyperlink{ARMA_Example}{\beamergotobutton{ARMA(1,1) model}}
+\begin{itemize}
+\setlength\itemsep{.25cm}
+\item parsimonious representations of many different time series\citep{AndrewsPloberger1996}.  
+\item mean-reverting financial time series \citep{PoterbaSummers1988}, 
+\item price-trend models \citep{Taylor2005}.
+\end{itemize}
+
+\item We also consider the 
+\hyperlink{STAR_Example}{\beamergotobutton{LSTAR model}} \citep{Terasvirta1994}.
+\begin{itemize}
+\setlength\itemsep{.25cm}
+\item business cycle asymmetry with recession/expansion regimes \citep{TerasvirtaAnderson1992,SkalinTerasvirta2001}.  
+%\item transition speed variable $\to \infty$ $\Rightarrow$ logistic function approaches an indicator function $\Rightarrow$ LSTAR nests many Threshold Autoregressive (TAR) models
+\item Rich class of specifications by changing the transition function \cite{vanDijkTerasvirtaFranses2002}
+\end{itemize}
+
+\item \textit{Remember, we are testing the residuals for serial correlation}
+
+\end{itemize}
+
+\vfill
+\hfill
+\hyperlink{ARMA_use_motivation}{\beamergotobutton{Return}}
+}
+
+
+
+\frame[label = STAR_0]{
+\frametitle{Additive Non-linear Models}
+%\hyperlink{STAR_Example}{\beamergotobutton{LSTAR model}}
+\begin{itemize}
+\item Additive Non-linear Models 
+\begin{align*}
+y_t & = \beta g(X_{t}, \pi) + \zeta X_{t} + \e_t \\
+&\\
+\e_t(\theta) & = y_t - \beta g(X_{t}, \pi) - \zeta X_{t}
+\end{align*}
+\item $g$ is a smooth nonlinear function
+\item Estimate with Least Squares:
+\[ Q_n(\theta) = \frac{1}{n} \sum\limits_{t=1}^{n} \e_t(\theta)^2 / 2 \]
+\item examples are Smooth Transition Auto-Regressive models (STAR) \citep{Terasvirta1994}
+\end{itemize}
+\vfill
+\hfill
+\hyperlink{slide1_wn_test}{\beamergotobutton{Return to 1st Slide}}
+\hspace*{.5cm}
+\hyperlink{white_noise_test_recap}{\beamergotobutton{Go back to WN Test Recap}}
+}
+
+\frame[label = ARMA_0]{
+\frametitle{ARMA Model}
+%\hyperlink{ARMA_Example}{\beamergotobutton{ARMA(1,1) model}}
+\begin{align*}
+y_t & = (\beta + \pi) y_{t-1} + \e_{t} - \pi \e_{t-1} \\ \\
+\e_t(\theta) & = y_t - \beta \sum_{j=0}^{\infty} \pi^{j} y_{t-j-1}
+\end{align*}
+\begin{itemize}
+\item Estimate with QML:
+\[ Q_n(\theta) = \frac{1}{2}log \zeta + \frac{1}{2 \zeta} \frac{1}{n} \sum\limits_{t=1}^{n} \Big( y_t - \beta \sum_{j=0}^{t-1} \pi^{j} y_{t-j-1} \Big)^2 \]
+\end{itemize}
+\vfill
+%\hfill
+%\hyperlink{slide1_wn_test}{\beamergotobutton{Return to 1st Slide}}
+\hspace*{.5cm}
+\hfill 
+\hyperlink{identification_is_a_real_issue}{\beamergotobutton{Return to Identification}}
+\hspace*{.5cm}
+\hyperlink{white_noise_test_recap}{\beamergotobutton{Return to WN Test}}
+}
+
+
+
+
+
+
+
+
+\subsection*{Max Tests}
+
+\frame[label = max_tests_explanation_slide]{
+\frametitle{Max Tests}
+\begin{equation*}
+\hat{\Tc}_n = \max_{1\le h \le \Le_n} | \sqrt{n} \hat{\rho}_n(h)|
+\end{equation*}
+\begin{itemize}
+\setlength\itemsep{.25cm}
+\item do not require inversion of a large covariance matrix
+\item Utilize the most informative of a sequence of estimators
+%\begin{itemize}
+%\item avoids issue of washing out the influence of a single non-zero estimate
+%\end{itemize}
+\item trade-off: ignore information from everything that is not the maximum
+
+\hfill 
+\hyperlink{correlation_examples}{\beamergotobutton{Example}}
+\hyperlink{correlation_examples_combo}{\beamergotobutton{Example 2}}
+
+\vspace*{.5cm}
+\item Inference usually relies on calculation of asymptotic distribution. \citep{deHaan1976,XiaoWu2014}
+\item But EVT requires conditions that might be too restrictive \citep{HillMontegi2016_many_zeros,HillMontegi2016_white_noise} 
+\begin{itemize}
+\item (e.g. dependence properties, non-standard distributions)
+\end{itemize}
+\item We will side-step EVT
+\hfill 
+\hyperlink{white_noise_test_recap}{\beamergotobutton{Return to White Noise Test}}
+\end{itemize}
+}
+
+
+
+
+\frame[label = correlation_examples]{
+\frametitle{Max Tests - Correlation Examples}
+%\begin{center}
+\hspace*{-1.25cm}
+\includegraphics[scale=.35]{../fig/rho_example_J100.png}
+%\end{center}
+
+\hfill 
+\hyperlink{correlation_examples_combo}{\beamergotobutton{Combining Correlations}}
+\hyperlink{max_tests_explanation_slide}{\beamergotobutton{Go back}}
+}
+
+
+\frame[label = correlation_examples_combo]{
+\frametitle{Max Tests - Max Correlation Examples}
+%\begin{center}
+\hspace*{-1.25cm}
+\includegraphics[scale=.35]{../fig/combinations_rho_example_J100.png}
+%\end{center}
+
+\hfill \hyperlink{max_tests_explanation_slide}{\beamergotobutton{Go back}}
+}
+
+
+
+
+\frame[label = bootstrapping_the_max_test_is_new]{
+\frametitle{Bootstrap}
+Bootstrapping this type of test is relatively new \citep{Chernozhukov_etal2013,Chernozhukov_etal2016,ZhangCheng2017,ZhangWu2017,HillMontegi2016_white_noise,HillMontegi2016_many_zeros}
+
+\vspace*{.5cm}
+We must account for 
+\begin{itemize}
+\item Dependence (uncorrelated, dependent errors)
+\item Non-standard distributions (weak identification)
+\item Unobserved random variables (residuals)
+\end{itemize}
+
+\vfill
+\hfill 
+\hyperlink{Test_stat_theorem}{\beamergotobutton{Return to Limiting Distribution of Test Stat}}
+}
+
+
+\frame[label = max_test_comments]{
+\frametitle{Appendix - Identification Robust Max Correlation Test}
+Appropriate for models with 
+\begin{itemize}
+\item potentially unidentified parameters
+\item known sources of identification failure \citep{AndrewsCheng2012}
+\end{itemize}
+
+\vspace*{.5cm}
+White Noise Test
+\begin{itemize}
+\item Only requires uncorrelatedness under the null \citep{RomanoThombs1996,FrancqRoyZakoian2005,NankervisSavin2010}
+%\item Appropriate for asymptotically infinitely many lags \citep{Robinson1991,Hong1996} %(many tests require finite cut-off)
+\item Appropriate for residuals (estimated models)
+\end{itemize}
+
+\vspace*{.5cm}
+Based on the maximum sample serial correlation \citep{deHaan1976,XiaoWu2014,HillMontegi2016_white_noise}
+
+\vspace*{.25cm}
+{\small Note: Our inference procedure does \textit{not} require the max correlation test.}
+
+\vfill
+\hfill 
+\hyperlink{white_noise_test_recap}{\beamergotobutton{Return to Max Test}}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{Test Statistic}
+
+\frame[label = Test_stat_theorem]{
+\frametitle{Appendix - White Noise Test - The Test Statistic}
+\begin{theorem}[$\Tc$ Limit Law]\label{T:T}
+Let some assumptions and $H_0$ hold.  Then for some non-unique sequence of positive integers $\{\Le_n\}$ with $\Le_n \to \infty$ and $\Le_n = o(n)$
+\begin{enumerate}[a]
+\item Under weak identification, $\Big| \hat{\Tc}_n - \max_{1\le h \le \Le_n}|\Z^{\psi}(h, \pi^*(b, \pi_0))| \Big| \toP 0$.
+\item Under strong identification, $\Big| \hat{\Tc}_n - \max_{1\le h \le \Le_n}|\Z^{\theta}(h)| \Big| \toP 0$.
+\end{enumerate}
+\end{theorem}
+\hyperlink{Test_stat_limiting_distribution}{\beamergotobutton{Limiting Distributions}}
+
+\begin{itemize}
+\item Take away: Distributions are different $\Rightarrow$ possibility of distorted inference when ignoring possibility of identification failure
+\begin{itemize}
+\item Under Strong Id, the limit is standard
+\item Under Weak Id, $\hat{\pi}_n$ is not consistent, and the limiting distribution is complicated!
+\end{itemize}
+\item We will bootstrap these distributions...
+\hfill 
+\hyperlink{bootstrapping_the_max_test_is_new}{\beamergotobutton{Bootstapping a Max Statistic?}}
+\end{itemize}
+
+\vfill \hfill \hyperlink{critical_values_short_slide}{\beamergotobutton{Return to CV slide}}
+}
+
+
+
+
+
+\subsection{Bootstrap}
+
+\frame[label = bootstrap_procedure]{
+\frametitle{Appendix - Bootstrap}
+\begin{itemize}
+\item First order expansion
+\begin{itemize}
+\item Accounts for the influence of model estimation ($\hat{\theta}_n$)
+\item Differs depending on identification scenario
+\end{itemize}
+
+\vspace*{.25cm}
+\item Two limiting distributions:
+
+\vspace*{.5cm}
+\item Strong Identification
+\begin{itemize}
+\item expand about true parameter $\theta_n = (\beta_n, \zeta, \pi)$
+\item the limit is standard
+\end{itemize}
+
+\vspace*{.5cm}
+\item Identification Failure
+\begin{itemize}
+\item $\hat{\pi}_n$ is not consistent ($\hat{\pi}_n \tod \pi^*$): additional source of randomness to replicate
+\item expand about point of identification failure: $\psi_{0,n} = (0, \zeta)$ : Two bias terms
+\end{itemize}
+\end{itemize}
+
+\vfill  \hyperlink{bootstrap_multiplier_blocks}{\beamergotobutton{Continue to Bootstrap Detail}}
+\hfill
+\hyperlink{critical_values_short_slide}{\beamergotobutton{Return to CV slide}}
+}
+
+
+
+
+
+
+\frame[label = bootstrap_multiplier_blocks]{
+\frametitle{Appendix - Bootstrap}
+\begin{itemize}
+\item Dependent Wild Bootstrap \citep{Shao2010,Shao2011}.
+
+\vspace{.2cm}
+\item block size: $k_n$
+\item $\tilde{z}_1, \dots, \tilde{z}_{n/k_n} \sim$ iid $N(0,1)$ random variables \end{itemize}
+
+\begin{center}
+\cboxx[2.95cm]{red1}{$\tilde{z}_{1}$}
+\cboxx[2.95cm]{cyan}{$\tilde{z}_{2}$}
+$\dots$
+\cboxx[2.95cm]{green1}{$\tilde{z}_{n/k_n}$}
+
+\cbox[.75cm]{red1}{$\tilde{z}_{1}$}
+\cbox[.75cm]{red1}{$\tilde{z}_{1}$}
+\cbox[.75cm]{red1}{$\tilde{z}_{1}$}
+\cbox[.75cm]{cyan}{$\tilde{z}_{2}$}
+\cbox[.75cm]{cyan}{$\tilde{z}_{2}$}
+\cbox[.75cm]{cyan}{$\tilde{z}_{2}$}
+$\dots$
+\cbox[.75cm]{green1}{$\tilde{z}_{n/k_n}$}
+\cbox[.75cm]{green1}{$\tilde{z}_{n/k_n}$}
+\cbox[.75cm]{green1}{$\tilde{z}_{n/k_n}$}
+
+\cboxx[.75cm]{red1}{${z}_{1}$}
+\cboxx[.75cm]{red1}{${z}_{2}$}
+\cboxx[.75cm]{red1}{${z}_{3}$}
+\cboxx[.75cm]{cyan}{${z}_{4}$}
+\cboxx[.75cm]{cyan}{${z}_{5}$}
+\cboxx[.75cm]{cyan}{${z}_{6}$}
+$\dots$
+\cboxx[.75cm]{green1}{${z}_{n-2}$}
+\cboxx[.75cm]{green1}{${z}_{n-1}$}
+\cboxx[.75cm]{green1}{${z}_{n}$}
+\end{center}
+
+\begin{itemize}
+\item $\{z_t\}$ is a sequence of Gaussian multipliers
+\end{itemize}
+
+\vfill
+\hfill
+\hyperlink{bootstrap_multiplier_blocks_formal}{\beamergotobutton{Formally...}}
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\frame[label = bootstrap_summary_weak_id]{
+\frametitle{Appendix - Bootstrap Overview}
+\textbf{Weak Identification:}
+\begin{enumerate}
+\item Simulate a random draw, $\pi^*_{(bs)}(b, \pi_0)$, from the distribution $\pi^*(b, \pi_0)$ using the $z_t$
+\item Use $\pi^*_{(bs)}(b, \pi_0)$ to construct the components of our test statistic under weak identification, which are functions of $\pi$.  
+\item Use the draws $z_t$ to construct the wild bootstrap version of the test statistic.  
+\item deal with nuisance parameters $b$ and $\pi_0$
+\end{enumerate}
+\hfill \hyperlink{bootstrap_algorithm_weak_id}{\beamergotobutton{Go to the Bootstrap Algorithm for Weak Id}}
+
+\textbf{Strong Identification:}
+\begin{enumerate}
+\item Construct the components of our test statistic using $\hat{\theta}_n$.  
+\item Use the draws $z_t$ to construct the wild bootstrap version of the test statistic.  
+\end{enumerate}
+\hfill \hyperlink{bootstrap_algorithm_strong_id}{\beamergotobutton{Go to the Bootstrap Algorithm for Strong Id}}
+}
+
+
+\subsubsection{Critical Value Computation}
+
+\frame[label = cv_computation_summary]{
+\frametitle{Appendix - Critical Value Computation Overview}
+\begin{enumerate}
+\item Repeat the above procedures $M$ times for each identification category.
+\item Order the resulting test statistics within each category.
+\item $\alpha$-level critical values are the statistics in $[(1-\alpha)\cdot M]$th ordered positions
+\item The critical value under weak identification depends on nuisance parameters.  Sup over these nuisance parameters.
+\end{enumerate}
+\hfill 
+\hyperlink{cv_computation}{\beamergotobutton{Go To Critical Value Computation Algorithm}}
+
+\vfill \hfill \hyperlink{critical_values_short_slide}{\beamergotobutton{Return to CV slide}}
+}
+
+
+
+\frame[label = theory_test_consistency]{
+\frametitle{Appendix - Critical Value Computation}
+\begin{theorem} \label{T:Bootstrap consistency of cvs}
+Under weak identification, let $k = w$, and 
+under (semi-) strong identification, let $k = s$.
+
+Let the number of bootstrap samples $M_n \to \infty$.  
+
+There is a non-unique sequence of positive integers $\{\Le_n\}$ with $\Le_n \to \infty$ and $\Le_n = o(n)$ such that $\hat{c}_{1-\alpha, n}^{(k)} \toP c_{1-\alpha}^{(k)}$.
+
+Moreover, under the alternative hypothesis, $P(\hat{T}_n > \hat{c}_{1-\alpha, n}^{(k)}) \to 1$ for $k=w$ \textit{and} $k=s$.
+\end{theorem}
+
+\begin{itemize}
+\item Critical values are consistent
+\item Tests based on either critical value are consistent under the alternative
+\item But this implies 2 different tests...
+\end{itemize}
+
+\vfill \hfill \hyperlink{critical_values_short_slide}{\beamergotobutton{Return to CV slide}}
+}
+
+
+
+
+
+
+
+
+
+
+\subsection{Robust Critical Values}
+
+
+\frame[label = robust_cvs]{
+\frametitle{Appendix - Putting the Critical Values Together}
+Robust Critical Values:
+\begin{itemize}
+\item Least Favorable (LF)
+\begin{itemize}
+\item always take the larger of the critical values
+\item $c_{1-\alpha}^{(LF)} = \max\{ c_{1-\alpha}^{(w)}, c_{1-\alpha}^{(s)} \}$
+\end{itemize}
+
+\vspace*{.5cm}
+\item Identification-Category Selection (ICS) 
+\begin{itemize}
+\item data driven pre-test for the id category
+\item Step 1: Use data to determine if $b = \lim_{n} \sqrt{n} \beta_n$ is finite
+\item Step 2:
+\begin{itemize}
+\item if we believe $b$ is finite, use $LF$ cv
+\item otherwise, use (semi-) Strong identification cv
+\end{itemize}
+\hfill 
+\hyperlink{ICS_cv_details}{\beamergotobutton{Go To ICS Details}}
+\end{itemize}
+\end{itemize}
+
+\vspace{1cm}
+Decision Rule: Reject the null hypothesis when $\hat{T}_n > c_{1-\alpha}^{(\cdot)}$.
+
+\vfill \hfill \hyperlink{critical_values_short_slide}{\beamergotobutton{Return to CV slide}}
+}
+
+
+
+\frame[label = theory_correct_asym_size]{
+\frametitle{Appendix - Putting the Critical Values Together}
+For any critical value, $c_{1-\alpha, n}$, the asymptotic size of the test is the maximum rejection probability over distributions consistent with the null hypothesis:
+\begin{align*}
+AsySz = \limsup_{n \to \infty} \sup_{\gamma \in \Gamma^*} P_{\gamma}(\Tc_n > c_{1-\alpha, n} | \ H_0).
+\end{align*}
+
+
+\begin{theorem}[\cite{AndrewsCheng2012}] \label{T:Asymptotic Size for LF, ICS tests}
+Under \pcite{AndrewsCheng2012} assumptions and $H_0$, the tests based on LF and ICS critical values $c^{(\cdot)}_{1-\alpha, n}$ satisfy $AsySz = \alpha$.
+\end{theorem}
+
+\vfill \hfill \hyperlink{critical_values_short_slide}{\beamergotobutton{Return to CV slide}}
+}
+
+
+
+
+
+
+
+
+
+
+\subsection*{Simulations - Appendix}
+
+
+\frame[label = sim_details]{
+\frametitle{Monte Carlo Simulations}
+\begin{itemize}
+\item $J=500$ samples of size 
+\item $n \in \{100,250,500,1000\}$
+\end{itemize}
+
+An assortment of lag lengths:
+\begin{itemize}
+\item $\Le_n \in \{ 5, [n^{1/3}], [\sqrt{n}/(\ln(n)/4)], [\sqrt{n}/(\ln(n)/5)], [\sqrt{n}], [.5n/\ln(n)] \}$.  
+
+\item Additionally, we use $\Le_n = [n/\ln(n)]$ when $n=500,1000$ leading to lag lengths $80$ and $144$, respectively.  
+\end{itemize}
+
+For the Bootstrap, we use 
+\begin{itemize}
+\item $M=500$ bootstrap samples
+\item DWB block size: $k_n = [\sqrt{n}]$.
+\end{itemize}
+\vfill \hfill \hyperlink{sim_model_setup}{\beamergotobutton{Return to Simulation Setup}}
+}
+
+
+
+
+
+
+
+
+
+
+\subsubsection*{STAR Simulations}
+
+
+\frame[label = STAR_sims]{
+\frametitle{STAR Simulations - Observations - Size/Power}
+\begin{itemize}
+\item Size ($H_{0}$ true):
+\begin{itemize}
+\item We see empirical size shrinkage for MC and LBQ across all specifications as $\Le_n$ increases.  
+\hyperlink{star_sim_size_shrinkage}{\beamergotobutton{Size Shrinkage}}
+
+\item Less of an issue for MC
+
+\item At lower $\Le_n$, sizes of ICS based statistics are close to nominal for iid errors, and conservative for GARCH errors
+\end{itemize}
+
+\vspace{.3cm}
+\item Power ($H_{0}$ false):
+\begin{itemize}
+\item ICS based tests are comparable to S based counterparts
+
+\item MC has comparable power to LBQ and sometimes smaller power than sup LM and CvM for $H_{A}$ with close correlation.  \hyperlink{star_sim_power_close}{\beamergotobutton{AR(2) Power}}
+
+\hyperlink{star_sim_power_close_2}{\beamergotobutton{MA(1) Power}}
+
+\item MC dominates for $H_{A}$ with distant correlation
+\hyperlink{star_sim_power_distant}{\beamergotobutton{MA(10) Power}}
+\end{itemize}
+
+\vspace{.3cm}
+\item Other Observations:
+\begin{itemize}
+\item Under Strong Id, ICS is comparable to S
+\hyperlink{star_sim_MCICS_vs_MC}{\beamergotobutton{MC ICS vs. MC S}}
+
+\item Size distortions of S only sometimes noticeable
+\hyperlink{star_sim_ICS_vs_S_2}{\beamergotobutton{ICS vs. S}}
+
+\item Under weak and non-id, ICS does not always appear to dominate S.
+\hyperlink{star_sim_ICS_vs_S}{\beamergotobutton{ICS vs. S 2}}
+\hfill \hyperlink{ARMA_sims}{\beamergotobutton{Return to ARMA sims}}
+\end{itemize}
+\end{itemize}
+%\hfill 
+%\hyperlink{STAR_sims}{\beamergotobutton{Return to STAR sims}}
+}
+
+
+
+\subsubsection*{ARMA Simulations}
+
+
+\frame[label = ARMA_sims_T500]{
+\frametitle{ARMA Simulations}
+\input{../fig/sims/RF_cv_dgp3_id1_T500_f0_a5.tex}
+\vspace*{-.5cm}
+\input{../fig/sims/RF_cv_dgp3_id2_T500_f0_a5.tex}
+\vspace*{-.75cm}
+\hfill
+\hyperlink{ARMA_sims_T100}{\beamergotobutton{Return to ARMA Sims}}
+}
+
+
+
+
+
+\subsection*{Empirical Example - Appendix}
+
+\frame[label = empirical_VWRETD_annual]{
+\frametitle{Empirical Example}
+\input{../fig/empirical/empirical_VWRETD_annual_4.tex}
+\vfill
+\hfill
+\hyperlink{empirical_VWRETD_monthly}{\beamergotobutton{Return to Empirical Example}}
+}
+
+
+\frame[label = empirical_EWRETD_annual]{
+\frametitle{Empirical Example}
+\input{../fig/empirical/empirical_EWRETD_annual_4.tex}
+\vfill
+\hfill
+\hyperlink{empirical_VWRETD_monthly}{\beamergotobutton{Return to Empirical Example}}
+}
+
+
+\frame[label = empirical_EWRETD_monthly]{
+\frametitle{Empirical Example}
+\input{../fig/empirical/empirical_EWRETD_monthly_4.tex}
+\vfill
+\hfill
+\hyperlink{empirical_VWRETD_monthly}{\beamergotobutton{Return to Empirical Example}}
+}
+
+
+
+%%%%%%%%%%%
+%%%%%%%%%%%
+%%%%%%%%%%%
+%%%%%%%%%%%
+%%%%%%%%%%%
+%%%%%%%%%%%
+
+%%%%%%%%%%%
+%%%%%%%%%%%
+%%%%%%%%%%%
+%%%%%%%%%%%
+%%%%%%%%%%%
+%%%%%%%%%%%
+
+%%%%%%%%%%%
+%%%%%%%%%%%
+%%%%%%%%%%%
+%%%%%%%%%%%
+%%%%%%%%%%%
+%%%%%%%%%%%
+
+%%%%%%%%%%%
+%%%%%%%%%%%
+%%%%%%%%%%%
+%%%%%%%%%%%
+%%%%%%%%%%%
+%%%%%%%%%%%
+
+
+
+
+
+
+
+
+
+
+\subsection*{Appendix B}
+
+
+
+
+
+\frame[label = bootstrap_multiplier_blocks_formal]{
+\frametitle{Bootstrap}
+\begin{itemize}
+\item Dependent Wild Bootstrap \citep{Shao2010,Shao2011}.
+\item First, draw standard normal random variables with perfect dependence within blocks and independence across blocks:
+\end{itemize}
+
+\vspace{.2cm}
+Formally,
+\begin{itemize}
+\item Select a block size $k_n$ s.t. $1\le k_n \le n$, $k_n \to \infty$, and $k_n / n \to 0$.
+\item Define blocks by $\Bb_{s} = \{ (s-1)k_n + 1, \dots, sk_n\}$ for $s=1,\dots, n/k_n$.
+\item Generate iid $N(0,1)$ random variables $\{\tilde{z}_1, \dots, \tilde{z}_{n/k_n}\}$ and
+\item Define $z_t = \tilde{z}_s$ if $t \in \Bb_{s}$.
+\end{itemize}
+
+\vspace{.2cm}
+\begin{itemize}
+\item $\{z_t\}$ is now a sequence of Gaussian multipliers
+\end{itemize}
+
+\vfill
+\hfill
+\hyperlink{bootstrap_multiplier_blocks}{\beamergotobutton{Go back}}
+}
+
+
+
+\frame[label = STAR_Example]{
+\frametitle{Recap - LSTAR Model}
+%\hyperlink{STAR_Example}{\beamergotobutton{LSTAR model}}
+\begin{itemize}
+\item LSTAR Model \citep{Terasvirta1994,AndrewsCheng2013,Hill2016_STAR_test}:  
+\begin{align*}
+\e_t(\theta) & = y_t - \beta y_{t-1} \times g(y_{t-d}, \pi) - \zeta y_{t-1}, \\
+g(z,\pi) & = \frac{1}{1 + \exp\{-\pi_1(z - \pi_2)\}}
+\end{align*}
+%\item we use $d = 1$ for simplicity.
+\item Estimate with Least Squares:
+\[ Q_n(\theta) = \frac{1}{n} \sum\limits_{t=1}^{n} \e_t(\theta)^2 / 2 \]
+\item Notation: $\theta = (\psi,\pi)$, $\psi = (\beta, \zeta)$, $\psi_{n} = (\beta_n, \zeta)$, $\psi_{0,n} = (0, \zeta)$
+\end{itemize}
+\vfill
+\hfill
+\hyperlink{STAR_Assumptions}{\beamergotobutton{Go to STAR Model Detailed Assumptions}}
+\hyperlink{Estimator_limits}{\beamergotobutton{Go to Estimator Limiting Distributions}}
+\hyperlink{id_robust_models}{\beamergotobutton{Return to example models}}
+}
+
+\frame[label = ARMA_Example]{
+\frametitle{Recap - ARMA Model}
+%\hyperlink{ARMA_Example}{\beamergotobutton{ARMA(1,1) model}}
+\begin{align*}
+y_t & = (\beta + \pi) y_{t-1} + \e_{t} - \pi \e_{t-1} \\
+\e_t(\theta) & = y_t - \beta \sum_{j=0}^{\infty} \pi^{j} y_{t-j-1}
+\end{align*}
+\begin{itemize}
+\item Estimate with QML:
+\[ Q_n(\theta) = \frac{1}{2}log \zeta + \frac{1}{2 \zeta} \frac{1}{n} \sum\limits_{t=1}^{n} \Big( y_t - \beta \sum_{j=0}^{t-1} \pi^{j} y_{t-j-1} \Big)^2 \]
+\item Notation: $\theta = (\psi,\pi)$, $\psi = (\beta, \zeta)$, $\psi_{n} = (\beta_n, \zeta)$, $\psi_{0,n} = (0, \zeta)$
+\end{itemize}
+\vfill
+\hfill
+\hyperlink{id_robust_models}{\beamergotobutton{Return to example models}}
+}
+
+
+
+
+
+\frame[label = ARMA_beta_hat_id0]{
+\frametitle{Identification Robustness}
+Identification failure leads to non-standard distributions:
+
+\includegraphics[scale=.3]{../fig/ARMA_beta_hat_id0_J10000.png}
+
+$\Rightarrow$ Non-standard Inference!
+\hfill 
+\hyperlink{ARMA_beta_hat_id1}{\beamergotobutton{back to ARMA(1,1) $\hat{\beta}_{n}$}}
+}
+
+
+\frame[label = STAR_beta_hat_id1]{
+\frametitle{Identification Robustness}
+%Identification failure leads to non-standard asymptotic and finite sample distributions 
+$y_t = \beta_n g(y_{t-1},\pi) + \zeta_n y_{t-1} + \e_{t}$:
+
+\vspace*{.5cm}
+\includegraphics[scale=.145]{../fig/STAR_beta_hat_id1_J10000.png}
+\includegraphics[scale=.145]{../fig/STAR_beta_hat_id2_J10000.png}
+
+\vspace*{.25cm}
+\begin{itemize}
+\item $\Rightarrow$ Non-standard Inference!
+\hfill 
+\hyperlink{ARMA_beta_hat_id1}{\beamergotobutton{ARMA(1,1) $\hat{\beta}_{n}$}}
+\hyperlink{STAR_beta_hat_id0}{\beamergotobutton{STAR(1) $\hat{\beta}_{n}$, non-id}}
+
+
+\vspace*{.25cm}
+\item Current inference relies on calculation of distributions \citep{AndrewsPloberger1996,AndrewsCheng2012,Cheng2015}
+
+\item Bootstrap has not been explored as a means of better approximating the finite sample distribution
+
+%\item Any test statistic we want to bootstrap will involve these non-standard 
+\end{itemize}
+
+}
+
+
+
+\frame[label = STAR_beta_hat_id0]{
+\frametitle{Identification Robustness}
+Identification failure leads to non-standard finite sample distributions ($y_t = \beta_n g(y_{t-1},\pi) + \zeta_n + \e_{t}$):
+
+\includegraphics[scale=.3]{../fig/STAR_beta_hat_id0_J10000.png}
+
+$\Rightarrow$ Non-standard Inference!
+\hfill 
+\hyperlink{STAR_beta_hat_id1}{\beamergotobutton{back to STAR(1) $\hat{\beta}_{n}$}}
+}
+
+
+
+
+
+
+
+
+\frame[label = beta_n_details]{
+\frametitle{Identification Categories}
+\begin{equation*}
+n^{\alpha} \beta_{n} \to b \in \R^{k_{\beta}}
+\end{equation*}
+
+\vspace*{1cm}
+\centering
+\begin{tabular}[H]{cc}
+$\alpha$ & Identification Category of $\pi$ \\
+\hline
+$\alpha \in [0,1/2)$ & (semi-) Strong \\
+$\alpha \in [1/2,\infty)$ & Weak \\
+\hline
+\end{tabular}
+
+\vspace*{1cm}
+\hfill 
+\hyperlink{weak_id_introduction}{\beamergotobutton{Return to Introduction}}
+}
+
+
+
+
+\frame[label = STAR_Assumptions]{
+\frametitle{LSTAR Model Assumptions}
+\begin{enumerate}[a]
+\item True Parameter Space 
+\begin{enumerate}[i]
+\item $\Theta^* = \{(\beta, \zeta, \pi): \beta \in \B^*, \ \zeta \in \Z^*(\beta), \pi \in \Pi^*\}$ is compact.
+\item $0 \in int(\B^*)$, $\Pi^* = \{ (\pi_1, \pi_2): \ \pi_1 \ge c\}$ for some $c>0$.  For some set $\Z_0^*$ and $\delta>0$, $\Z^*(\beta) = Z_0^*$ $\forall \beta$ s.t. $||\beta||<\delta$.
+\end{enumerate}
+
+\item Optimization Parameter Space 
+\begin{enumerate}[i]
+\item $\Theta = \{(\beta, \zeta, \pi): \beta \in \B, \ \zeta \in \Z(\beta), \pi \in \Pi\}$ is compact, and $\Theta^* \subset int(\Theta)$.
+\item For some set $\Z_0$ and $\delta>0$, $\Z(\beta) = Z_0$ $\forall \beta$ s.t. $||\beta||<\delta$, and $\Z_0^* \subset int(\Z_0)$.
+\end{enumerate}
+\end{enumerate}
+
+\hyperlink{STAR_Assumptions}{\beamergotobutton{Assumptions continued...}}
+\hfill \hyperlink{STAR_Example}{\beamergotobutton{Return to LSTAR}}
+}
+
+
+\frame[label = STAR_Assumptions_2]{
+\frametitle{LSTAR Model Assumptions}
+\begin{enumerate}[a]
+\setcounter{enumi}{2}
+\item Under $H_0$, $E(\e_t| x_t) = 0$ a.s. and $E(\e_t^2|x_t) = \sigma^2 \in (0,\infty)$ a.s.
+
+\item $E[\e_t(\psi_0,\pi) d_{\psi,t}(\pi)] = 0$ for a unique $\psi_0 = (0', \zeta_0')' \in int(\Psi^*)$, or $E[\e_t(\theta_0) d_{\theta,t}(\pi)] = 0$ for a unique $\theta_0 = (\beta_0', \zeta_0', \pi_0')' \in int(\Psi^* \times \Pi^*) = int(\Theta^*)$.
+
+\item $y_t$ is strictly stationary, $L_p$-bounded for some $p>8$, and $\beta$-mixing with mixing coefficients $\beta_{l} = O(l^{-1p(1-p)-\iota})$ for some $q>p$ and $\iota>0$.
+
+\item $g(\cdot, \pi)$ is Borel measurable for each $\pi$ and twice continuously differentiable in $\pi$.  $g(z_t, \pi)$ is a non-degenerate random variable for each $\pi \in \Pi$.  $E[\sup_{\pi \in \Pi} || (\partial/\partial \pi)^j g(z_t,\pi) ||^8] < \infty$ for $j = 0,1,2$.
+
+\item Long Run Variances
+\begin{enumerate}[i]
+\item Under weak identification, $\liminf_{n\to \infty} \inf_{\alpha, r, \pi} E[(r' \sum_{i=1}^{m} \alpha_i G^{\psi}_{n}(\pi_i))^2] > 0$.
+\item Under strong identification, $\liminf_{n\to \infty} \inf_{r} E[(r' G^{\theta}_{n})^2] > 0$.
+\item $\inf_{r,\pi} E[(r' d_{\psi,t}(\pi))^2] > 0$ and $\inf_{r,\beta,\pi} E[(r' B^{-1}(\beta) d_{\theta,t}(\pi))^2] > 0$.
+\end{enumerate}
+\end{enumerate}
+
+\hfill \hyperlink{STAR_Example}{\beamergotobutton{Return to LSTAR}}
+}
+
+
+
+
+\frame[label = Estimator_limits]{
+\frametitle{Estimator Limiting Distributions}
+Under \textbf{Weak Identification}:
+\begin{equation*}
+\pmat{n^{1/2}(\hat{\psi}_n - \psi_n) \\ \hat{\pi}_n} \tod \pmat{\T(\pi^*(\gamma_0, b); \gamma_0,b) \\ \pi^*(\gamma_0, b)}
+\end{equation*}
+where
+\begin{itemize} \small
+\item $\T(\pi; \gamma_0, b) = -H^{-1}(\pi; \gamma_0)(G(\pi; \gamma_0) + K(\pi; \gamma_0)b) - (b,0)$
+\item $\pi^*(\gamma_0, b) = \argmin_{\pi \in \Pi} \xi(\pi; \gamma_0, b)$
+\item and
+$\xi(\pi; \gamma_0, b) = -\frac{1}{2} (G(\pi) + K(\pi, \pi_0)b)' H^{-1}(\pi) (G(\pi) + K(\pi, \pi_0)b)$.
+\end{itemize}
+\hfill \hyperlink{weak_id_objects}{\beamergotobutton{Weak ID Objects}}
+
+\vspace*{.3cm}
+Under \textbf{Strong Identification}:
+\begin{equation*}
+n^{1/2}B(\beta_n)(\hat{\theta}_n - \theta_n) \tod J^{-1} G^{\theta}
+\end{equation*}
+\begin{itemize} \small
+\item where $B(\beta) = \pmat{I_{d_{\psi}} & 0_{d_{\psi} \times d_{\pi}} \\ 0_{d_{\psi} \times d_{\pi}} & ||\beta|| \cdot I_{d_{\pi}}}$ and 
+$G^{\theta} \sim N(0,V)$
+\end{itemize}
+
+\hfill \hyperlink{STAR_Example}{\beamergotobutton{Return to LSTAR}}
+}
+
+
+
+
+\frame[label = weak_id_objects]{
+\frametitle{LSTAR Model - Weak Identification Objects}
+Define $d_{\psi, t}(\pi) = \deriv{\psi} \e_t(\psi, \pi) = (X_t' g(Z_t, \pi), X_t')'$.
+
+\vspace*{.5cm}
+$G(\cdot;\gamma_0)$ is a mean-zero Gaussian process with covariance kernel 
+\begin{equation*}
+\Omega(\pi, \tilde{\pi}; \gamma_0) = E_{\gamma_0} [\e_t^2 d_{\psi, t}(\pi)  d_{\psi, t}(\tilde{\pi})']
+\end{equation*}
+and
+\begin{align*}
+K(\pi; \gamma_0) &= -E_{\gamma_0}[ d_{\psi, t}(\pi) d_{\psi, t}(\pi_0)' \cdot S_{\beta}'], \qquad
+S_{\beta} = [I_{d_{\beta}}: 0] \in \R^{d_{\beta} \times d_{\psi}}\\
+H(\pi; \gamma_0) &= E_{\gamma_0}[ d_{\psi, t}(\pi) d_{\psi, t}(\pi)'] \\
+D^{\psi}(h,\pi) &= E_{\gamma_0}[d_{\psi, t}(\pi) \e_{t-h}(\psi_{0,n},\pi) + d_{\psi, t-h}(\pi) \e_{t}(\psi_{0,n},\pi)]
+\end{align*}
+\hyperlink{Estimator_limits}{\beamergotobutton{Return to Estimator Limiting Distributions}}
+\hfill \hyperlink{Test_stat_limiting_distribution}{\beamergotobutton{Return to Test Statistic Limiting Distributions}}
+}
+
+
+\frame[label = weak_id_objects_sample]{
+\frametitle{LSTAR Sample Weak Identification Objects}
+\begin{align*}
+& \hat{H}_{n}(\pi) = \frac{1}{n} \sum_{t=1}^{n} d_{\psi, t}(\pi) d_{\psi, t}(\pi)' \\
+& \hat{K}_{n}(\pi; \gamma_0) = -\frac{1}{n} \sum_{t=1}^{n} d_{\psi, t}(\pi) x_{t} g(z_t,\pi_0)
+\end{align*}
+and
+\begin{align*}
+G_{n}(\pi) 
+&\equiv \frac{1}{\sqrt{n}} \sum_{t=1}^{n} \Big\{ m_{t}^{\psi}(\pi) - E_{\gamma_n}[m_{t}^{\psi}(\pi)] \Big\} \\
+& m_{t}^{\psi}(\pi) \equiv m_{t}(\psi_{0,n},\pi) = \e_{t}(\psi_{0,n},\pi) d_{\psi,t}(\pi)
+\end{align*}
+
+\hyperlink{Estimator_limits}{\beamergotobutton{Return to Estimator Limiting Distributions}}
+\hfill \hyperlink{Test_stat_limiting_distribution}{\beamergotobutton{Return to Test Statistic Limiting Distributions}}
+}
+
+
+
+\frame[label = Test_stat_limiting_distribution]{
+\frametitle{Test Statistic Limits}
+
+$\{ \Z^{\psi}(h, \pi): h \in \N, \pi \in \Pi\}$ is a 
+\begin{itemize}
+\item Gaussian process with mean $\lim\limits_{n\to \infty} \sqrt{n} E_{\gamma_n}(r^{2,\psi,n}_{t}(h,\pi)) < \infty$ and \item covariance kernel $\lim\limits_{n \to \infty} \frac{1}{n} \sum_{s,t=1}^{n}$ $E_{\gamma_n}[r^{1,\psi,n}_s(h, \pi)$ $r^{1,\psi,n}_t(\tilde{h}, \tilde{\pi})]$.  
+\item where $r^{1,\psi,n}_t(h, \pi) = \frac{\e_{t} \e_{t-h} - E[\e_{t} \e_{t-h}]}{E[\e_{t}^2]} - \frac{ \D(h,\pi)' H^{-1}(\pi; \gamma_0) \big( m^{\psi}_t(\pi) - E_{\gamma_n}[m^{\psi}_t(\pi)] \big)}{E[\e_{t}^2]} $ and  
+\item $r^{2,\psi,n}_t(h, \pi) = \frac{\e_{t}(\psi_{0,n}, \pi) \e_{t-h}(\psi_{0,n}, \pi) - \e_{t} \e_{t-h}}{E[\e_{t}^2]} - \frac{ \D(h,\pi)' H^{-1}(\pi; \gamma_0) \big( \beta_n \deriv{\tilde{\beta}} E_{\tilde{\gamma}_{n}}[m^{\psi}_t(\pi)] \big)}{E[\e_{t}^2]} $.
+\end{itemize}
+
+$\{ \Z^{\theta}(h): h \in \N\}$ is a 
+\begin{itemize}
+\item zero mean Gaussian process with
+\item covariance kernel $\lim\limits_{n \to \infty} \frac{1}{n} \sum_{s,t=1}^{n} E[r^{\theta}_s(h) r^{\theta}_t(\tilde{h})]$.
+\item where $r^{\theta}_t(h) = \frac{\e_{t} \e_{t-h} - E[\e_{t} \e_{t-h}] - \D^{\theta}(h)' J^{-1}(\gamma_0) m^{\theta}_t}{E[\e_{t}^2]}$.
+\end{itemize}
+
+\hyperlink{weak_id_objects}{\beamergotobutton{Go to LSTAR Weak ID Objets}}
+\hfill
+\hyperlink{Test_stat_theorem}{\beamergotobutton{Return to Test Statistics}}
+}
+
+
+
+
+
+
+\frame[label = bootstrap_algorithm_weak_id]{
+\frametitle{Bootstrap under Weak Identification - Algorithm}
+\textbf{Step 1.} Compute
+{\small 
+\begin{align*}
+\hat{H}_n(\pi) & = \frac{1}{n} \sum_{t=1}^{n} d_{\psi, t}(\pi) d_{\psi, t}(\pi)' \\
+\hat{K}_n(\pi; \gamma_0) & = \frac{1}{n} \sum_{t=1}^{n} d_{\psi, t}(\pi) x_t' g(z_t, \pi_0) \\
+\hat{G}_{n}^{(bs)}(\pi) 
+&= \frac{1}{\sqrt{n}} \sum_{t=1}^{n} z_t \Big\{ d_{\psi, t}(\pi) \e_t(\hat{\psi}_{\highlight{0,n}}(\pi), \pi)
+- \frac{1}{n} \sum_{t=1}^{n} \big[ d_{\psi, t}(\pi) \e_t(\hat{\psi}_{\highlight{0,n}}(\pi), \pi) \big] \Big\}
+\end{align*}
+}% 
+
+Define
+\begin{align*}
+& \xi_n^{(bs)}(\pi; \gamma_0, b) = \\
+& \qquad -\frac{1}{2} \Big( \hat{G}_{n}^{(bs)}(\pi) + \hat{K}_n(\pi; \gamma_0) b \Big)' (\hat{H}_n(\pi))^{-1} \Big( \hat{G}_{n}^{(bs)}(\pi) + \hat{K}_n(\pi; \gamma_0) b \Big),
+\end{align*}
+and compute $\pi^*_{(bs)}(\gamma_0, b) = \argmin_{\pi \in \Pi} \xi^{(bs)}_{n}(\pi; \gamma_0, b)$.
+}
+
+
+\frame{
+\frametitle{Bootstrap under Weak Identification - Algorithm}
+\textbf{Step 2.} Use $\pi^*_{(bs)}(\gamma_0, b)$ and $\hat{\psi}_{0,n} = (0',\hat{\zeta}_n')'$ to compute 
+\begin{align*}
+\G_n(\pi^*_{(bs)}) = (\hat{H}_n(\pi^*_{(bs)}))^{-1} \Big[ m_{t}(\hat{\psi}_{0,n}, \pi^*_{(bs)}) - \frac{1}{n} \sum_{t=1}^{n} m_{t}(\hat{\psi}_{0,n}, \pi^*_{(bs)}) \Big]
+\end{align*}
+and 
+\begin{align*}
+& \hat{\D}_{n}(h, \pi^*_{(bs)}) = \\
+& \frac{1}{n} \sum_{t=1+h}^{n} [d_{\psi, t}(\pi^*_{(bs)}) \e_{t-h}(\hat{\psi}_{0,n},\pi^*_{(bs)}) + d_{\psi, t-h}(\pi^*_{(bs)}) \e_{t}(\hat{\psi}_{0,n},\pi^*_{(bs)})].
+\end{align*}
+
+Define 
+\begin{align*}
+\hat{\E}_{t,h}(\psi, \pi)
+& = \e_{t}(\psi, \pi)\e_{t-h}(\psi, \pi) - \G_n(\pi^*_{(bs)})' \hat{\D}_{n}(h, \pi^*_{(bs)}) \\
+& \qquad - \highlight{\frac{1}{n} \sum_{t=1+h}^{n} [\e_{t}(\psi, \pi)\e_{t-h}(\psi, \pi) - \e_{t}\e_{t-h}]},
+\end{align*}
+}
+
+\frame{
+\frametitle{Bootstrap under Weak Identification - Algorithm}
+\textbf{Step 3.} Use the draws $\{z_t\}$ to define
+\begin{align*}
+\hat{\rho}_n^{(w)}(h; \gamma_n, b)
+& = \frac{1}{n^{-1}\sum_{t=1}^{n} \e_t^2(\hat{\theta}_n)} \times \Bigg\{ \frac{1}{n} \sum_{t=1+h}^{n} z_t \Big( \hat{\E}_{t,h}(\hat{\psi}_{0,n}, \pi^*_{(bs)}) \\
+& \hspace*{.5cm} - \frac{1}{n} \sum_{t=1+h}^{n} \hat{\E}_{t,h}(\hat{\psi}_{0,n}, \pi^*_{(bs)}) \Big) \\
+& \hspace*{.5cm} - ((\hat{H}_n(\pi^*_{(bs)}))^{-1} \hat{K}_n(\pi; \gamma_n) \frac{b}{\sqrt{n}})' \hat{\D}_{n}(h, \pi^*_{(bs)}) \\
+& \hspace*{.5cm} + \highlight{\frac{1}{n} \sum_{t=1+h}^{n} [\e_{t}(\hat{\psi}_{0,n},\pi) \e_{t-h}(\hat{\psi}_{0,n},\pi) - \e_{t} \e_{t-h}]} \Bigg\}.
+\end{align*}
+
+Define the bootstrapped test statistic 
+\begin{align*}
+\hat{\Tc}_n^{(w)}(\gamma_n, b) = \max_{1\le h \le \Le_n} |\sqrt{n} \ \hat{\rho}_n^{(w)}(h; \gamma_n, b)|
+\end{align*}
+}
+
+\frame{
+\frametitle{Bootstrap under Weak Identification - Algorithm}
+%Observe that we subtract $E_{\gamma_n}[\e_{t}(\psi, \pi)\e_{t-h}(\psi, \pi)]$ from the component that will multiplied by the random variable $z_t$, and then add $E_{\gamma_n}[\e_{t}(\psi, \pi)\e_{t-h}(\psi, \pi)]$ after.  Recall that the distribution of the test statistic has mean $\lim\limits_{n\to \infty} \sqrt{n} E_{\gamma_n}[\e_{t}(\psi_{0,n}, \pi^*)\e_{t-h}(\psi_{0,n}, \pi^*)]$, hence the reason for adding the quantity after multiplication by $z_t$.  We must subtract the quantity prior to multiplication as failing to do so will bias the variance of the bootstrapped distribution, since the variance in the distribution of the test statistic is based on $\e_{t} \e_{t-h}$, but our critical values are constructed using $\e_{t}(\hat{\psi}_{0,n}, \hat{\pi}_n)\e_{t-h}(\hat{\psi}_{0,n}, \hat{\pi}_n)$.
+
+%Critical value construction, which is based on order statistics of repeated draws of $\hat{\Tc}_n^{(w)}(\gamma_n, b)$, is defined below.  Observe that the bootstrapped test statistic is a function of the nuisance parameters $(\pi_n, b)$ which cannot be consistently estimated.  Therefore, we will define the $\alpha$-level critical value $c_{n, 1-\alpha}^{(w)} = \sup_{\pi_n, b} c_{n, 1-\alpha}^{(w)}(\gamma_n, b)$.
+
+\textbf{Step 4.}  The final step is discussed under critical value computation.
+
+\vspace{2cm}
+\hyperlink{cv_computation}{\beamergotobutton{Go to Critical Value Computation}}
+\hfill 
+\hyperlink{bootstrap_summary_weak_id}{\beamergotobutton{Return to Bootstrap Summary}}
+}
+
+
+\subsubsection{Strong Identification}
+\frame[label = bootstrap_algorithm_strong_id]{
+\frametitle{Bootstrap under Strong Identification - Algorithm}
+
+\begin{itemize}
+\item Simpler construction (no bias terms)
+\item Simpler procedure (no $\pi^*$ and no nuisance parameters).
+\end{itemize}
+
+\begin{enumerate}
+\item Compute $\hat{J}_n(\hat{\theta}_n) = \frac{1}{n} \sum_{t=1}^{n} B(\hat{\beta}_n)^{-1}  d_{\theta, t}(\hat{\theta}_{n}) d_{\theta, t}(\hat{\theta}_{n})' B(\hat{\beta}_n)^{-1 \prime}$,  
+$\hat{\D}^{\theta}_{n}(h, \hat{\theta}_n) = \frac{1}{n} \sum_{t=1+h}^{n} B(\hat{\beta}_n)^{-1}  [d_{\theta, t}(\hat{\theta}_{n}) \e_{t-h}(\hat{\theta}_{n}) + d_{\theta, t-h}(\hat{\theta}_{n}) \e_{t}(\hat{\theta}_{n})]$, and $m^{\theta}_t(\theta) = d_{\theta, t}(\hat{\theta}_{n}) \e_{t}(\hat{\theta}_{n})$.
+
+\item Define $\hat{\E}_{t,h}(\theta) 
+= \e_{t}(\theta)\e_{t-h}(\theta) - (\hat{\D}^{\theta}_{n}(h, \theta))' (\hat{J}_n(\hat{\theta}_n))^{-1} B(\hat{\beta}_n)^{-1} m^{\theta}_t(\theta)$.
+
+\item Use the draws $\{z_t\}$ to define
+\begin{align*}
+\hat{\rho}_n^{(s)}(h)
+& = \frac{1}{n^{-1}\sum_{t=1}^{n} \e_t^2(\hat{\theta}_n)} \\
+& \qquad \times \Bigg\{ \frac{1}{n} \sum_{t=1+h}^{n} z_t \Big( \hat{\E}_{t,h}(\hat{\theta}_n)  - \frac{1}{n} \sum_{t=1+h}^{n} \hat{\E}_{t,h}(\hat{\theta}_n) \Big) \Bigg\}
+\end{align*}
+
+\item Define the bootstrapped test statistic $\hat{\Tc}_n^{(s)} = \max_{1\le h \le \Le_n} |\sqrt{n} \ \hat{\rho}_n^{(s)}(h)|$.
+\end{enumerate}
+
+\hyperlink{cv_computation}{\beamergotobutton{Go to Critical Value Computation}}
+\hfill 
+\hyperlink{bootstrap_summary_weak_id}{\beamergotobutton{Return to Bootstrap Summary}}
+}
+
+
+
+
+\frame[label = cv_computation]{
+\frametitle{Critical Value Computation - Algorithm}
+\begin{enumerate}
+\item For $k = w,s$, repeat the above procedures $i=1,\dots, M$ times: $\{ \hat{\Tc}_{n,i}^{(s)} \}_{i=1}^{M}$ and $\{ \hat{\Tc}_{n,i}^{(w)}(\gamma_n, b) \}_{i=1}^{M}$.
+\item Define the order statistics $\{ \hat{\Tc}_{n,(i)}^{(k)} \}_{i=1}^{M}$ such that $\hat{\Tc}_{n,(1)}^{(k)} \le \hat{\Tc}_{n,(2)}^{(k)} \le \cdots \le \hat{\Tc}_{n,(M)}^{(k)}$.
+\item The approximate $\alpha$-level critical values are
+\begin{itemize}
+\item strong id: $\hat{c}_{n, 1-\alpha}^{(s)} = \hat{\Tc}_{n,[(1-\alpha)\cdot M]}^{(s)}$
+\item weak id: $\hat{c}_{n, 1-\alpha}^{(w)}(\gamma_n, b) = \hat{\Tc}_{n,[(1-\alpha)\cdot M]}^{(w)}(\gamma_n, b)$
+\begin{itemize}
+\item Consistent estimators are not available for $(\pi_n, b)$
+\item In practice, $c_{n, 1-\alpha}^{(w)} = \sup_{\pi_n, b} c_{n, 1-\alpha}^{(w)}(\gamma_n, b)$.
+\end{itemize}
+\end{itemize}
+\end{enumerate}
+
+\vspace{1cm}
+\hyperlink{cv_computation_summary}{\beamergotobutton{Return to Critical Value Overview}}
+\hfill 
+\hyperlink{bootstrap_summary_weak_id}{\beamergotobutton{Return to Bootstrap Overview}}
+}
+
+
+
+
+\frame[label = ICS_cv_details]{
+\frametitle{ICS Critical Values}
+The statistic used for category selection is 
+\begin{equation*}
+\A_n = (n \hat{\beta}_n' \hat{\Sigma}_{\beta \beta, n}^{-1} \hat{\beta}_n / d_{\beta})^{1/2}
+\end{equation*}
+where $\hat{\Sigma}_{\beta \beta, n}$ is the upper left $d_{\beta} \times d_{\beta}$ block of $\hat{\Sigma}_{n} = \hat{J}_n^{-1} \hat{V}_n \hat{J}_n^{-1}$, the estimator of the strong identification covariance matrix $\Sigma(\gamma_0) = J^{-1} V J^{-1}$.
+
+Let $\{\kappa_n: \ n\ge 1\}$ be a sequence of constants s.t. 
+\begin{equation*}
+\kappa_n \to \infty \qquad \text{and} \qquad \kappa_n / n^{1/2} \to 0
+\end{equation*}
+
+The ICS critical value is $c_{1-\alpha}^{(ICS)} = \begin{cases}
+c_{1-\alpha}^{(LF)} & \qquad \text{if} \ \A_n \le \kappa_n \\ 
+c_{1-\alpha}^{(s)} & \qquad \text{if} \ \A_n > \kappa_n
+\end{cases}$
+
+\hfill 
+\hyperlink{robust_cvs}{\beamergotobutton{Return to CV Overview}}
+}
+
+
+
+\frame[label = slide_for_Valentin]{
+\frametitle{Why not just test a Taylor Expansion of the model?}
+
+\begin{itemize}
+\item Some tests for linearity against STR alternatives use a Taylor expansion. (e.g. \citep{Luukkonen_etal1988}).
+\item This adds a remainder term to the error.
+\item Taylor Expansion of $g(z,\pi)$ around $\pi_{1} = 0$ (not $\pi_{1,0}$):
+\begin{align*}
+y_{t} = \zeta y_{t-1} + \beta y_{t-1} g(z_{t},\pi) + \e_t
+\quad \Rightarrow \quad
+y_{t} & = \alpha_{0} y_{t-1} + \alpha_{1} y_{t-1} z_{t} + \nu_{t} \\
+& \nu_{t} = \e_{t} + \beta y_{t-1} R(z_{t}, \pi) 
+\end{align*}
+
+\item $H_0$ says nothing about $\beta$ or $\pi$ $\Rightarrow$ $E[\nu_{t}\nu_{t-h}] \ne 0$.
+\hfill 
+\hyperlink{slide_for_Valentin_adendum}{\beamergotobutton{Adendum}}
+
+\item Future Questions:
+\begin{itemize}
+\item Longer Expansion: must make $R(z_t, \pi)$ and $R(z_t, \pi)^2$ disappear
+\item What about other models (e.g. ARMA)? 
+\end{itemize}
+\end{itemize}
+
+\vfill
+\hyperlink{introduction_white_noise_test}{\beamergotobutton{Return to Introduction}}
+\hfill 
+\hyperlink{white_noise_test_recap}{\beamergotobutton{Return to White Noise Test Recap}}
+}
+
+
+
+\frame[label = slide_for_Valentin_adendum]{
+\frametitle{Adendum to Taylor Expansion method}
+
+\begin{itemize}
+\item Under non-identification, $\beta_n = 0$
+\item Under weak identification $\beta_n \to 0$, $\sqrt{n} \beta_n \to b < \infty$
+\end{itemize}
+\begin{align*}
+\text{Under } H_{0}, \quad
+\sqrt{n} & E_{\gamma_{n}}[\nu_{t} \nu_{t-h}] \\
+& = \sqrt{n} E[\e_{t} \e_{t-h}] + \sqrt{n} E_{\gamma_{n}}[\beta_{n} y_{t-1} \e_{t-h} R(z_{t}, \pi)] 
+\\ & \qquad + \sqrt{n} E_{\gamma_{n}}[\beta_{n} y_{t-1-h} \e_{t} R(z_{t-h}, \pi)]
+\\ & \qquad + \sqrt{n} E_{\gamma_{n}}[\beta_{n} y_{t-1} y_{t-1-h} R(z_{t}, \pi) \beta_{n}  R(z_{t-h}, \pi)] \\
+% & \to b E[y_{t-1} \e_{t-h} R(z_{t}, \pi)] + b E[y_{t-1-h} \e_{t} R(z_{t-h}, \pi)] \\ & \qquad + \beta_{n} b E[ y_{t-1} y_{t-1-h} R(z_{t}, \pi) R(z_{t-h}, \pi)] \\
+& \to b E[y_{t-1} \e_{t-h} R(z_{t}, \pi)] + b E[y_{t-1-h} \e_{t} R(z_{t-h}, \pi)]
+\end{align*}
+\begin{itemize}
+\item Potential for new robust test:
+\begin{itemize}
+\item Use Taylor expansion under weak identification
+\item Use original model under strong identification
+\item eliminate the need to sup over nuisance parameters in practice
+\item but still not clear how to use this method for other models...
+\end{itemize}
+\end{itemize}
+
+\vfill
+\hfill 
+\hyperlink{slide_for_Valentin}{\beamergotobutton{Return to Taylor Expansion Page}}
+}
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\backupend
+
+
+\end{document}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
+
+\frame[label=slide_label]{
+
+\hyperlink{slide_label}{\beamergotobutton{Go Back.}}
+}
+
+
+
+\begin{itemize}
+\small
+\setlength{\itemsep}{0cm}%
+\setlength{\parskip}{0cm}%
+\item 
+\end{itemize}
+
+\frame{
+\frametitle{}
+\begin{columns}[onlytextwidth]
+\begin{column}{0.5\textwidth}
+\centering
+%\includegraphics[scale=.22]{two_dogsA}
+\end{column}
+
+\begin{column}{0.5\textwidth}
+\centering
+%\includegraphics[scale=.22]{two_dogsB}
+\end{column}
+\end{columns}
+}
+
+
+
+
+

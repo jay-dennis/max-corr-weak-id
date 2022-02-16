@@ -1,0 +1,16 @@
+/**/backup
+/**/archive
+/**/archived
+/**/.idea
+/**/*.aux
+/**/*.bbl
+/**/*.blg
+/**/*.log
+/**/*.nav
+/**/*.gz
+/**/*.out
+/**/*.snm
+/**/*.toc
+/**/*.txt
+/**/*.pptx
+/**/*.zip

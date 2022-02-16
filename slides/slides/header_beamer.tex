@@ -1,0 +1,100 @@
+%To Print Notes too
+%\documentclass[11pt, notes]{beamer}
+
+%To Compile Only slides
+\documentclass[11pt]{beamer}
+
+\usepackage{amsmath,amsthm,enumerate,graphicx,bm,type1cm,amssymb,epsfig,lscape,setspace,url,listings,color,float}
+%wrapfig,tikz,calc}
+\usepackage{fancybox,etoolbox}
+\usepackage{hyperref}
+\usepackage[round]{natbib}
+%\usepackage{soul}
+
+%\setstcolor{red}
+
+\usepackage[normalem]{ulem}
+\usepackage{xcolor}
+
+
+\newcommand\redsout{\bgroup\markoverwith{\textcolor{red}{\rule[0.5ex]{2pt}{0.4pt}}}\ULon}
+
+
+% % %%FOR PRINTING
+%\usepackage{pgfpages}
+%\pgfpagesuselayout{2 on 1}[letterpaper,border shrink=5mm]
+% % %%\pgfpagesuselayout{resize to}[letterpaper,border shrink=5mm,landscape]
+%
+
+
+%\setlength{\oddsidemargin}{5mm}
+%\setlength{\textwidth}{16cm}
+%\setlength{\topmargin}{0pt}
+%\setlength{\headheight}{0pt}
+%\setlength{\headsep}{0pt}
+%\setlength{\textheight}{23cm}
+%\onehalfspacing
+%\setbeamersize{text margin left = 10pt}
+
+
+
+
+\usetheme{Madrid}
+\setbeamersize{text margin left=1em}
+\beamertemplatenavigationsymbolsempty
+
+%\usetheme{Frankfurt}
+%\useoutertheme{smoothtree}
+%\useinnertheme{circles}
+
+
+%\sectionfont{\large}
+
+%\theoremstyle{definition}
+%\newtheorem{mc}{MC}
+%\newtheorem{thm}{Theorem}[section]
+%\newtheorem{example}{Example}[section]
+%\newtheorem{prop}{Proposition}[section]
+%\newtheorem{pr}{Proof}
+%\newtheorem{assump}{Assumption}[section]
+%\newtheorem{lemma}{Lemma}[section]
+%\newtheorem{definition}{Definition}[section]
+%\newtheorem*{dfn}{Definition}
+%\newtheorem*{rem}{Remark}
+% \def\stackunder#1#2{\mathrel{\mathop{#2}\limits_{#1}}}
+% \renewcommand{\theequation}{\thesection.\arabic{equation}}
+%\newtheorem{corol}{Corollary}[section]
+
+\undef{\lemma}
+\newtheorem{lemma}{Lemma}
+
+\undef{\assumption}
+\newtheorem{assumption}{Assumption}
+
+\undef{\remark}
+\newtheorem{remark}{Remark}
+
+\undef{\corollary}
+\newtheorem{corollary}{Corollary}
+
+\undef{\example}
+\newtheorem{example}{Example}
+
+\newtheorem{model}{Model}
+  
+
+\setlength{\bibsep}{0pt plus 0.3ex}
+
+\allowdisplaybreaks
+
+\restylefloat{table}
+
+\newcommand{\beginbackup}{
+   \newcounter{framenumbervorappendix}
+   \setcounter{framenumbervorappendix}{\value{framenumber}}
+}
+\newcommand{\backupend}{
+   \addtocounter{framenumbervorappendix}{-\value{framenumber}}
+   \addtocounter{framenumber}{\value{framenumbervorappendix}} 
+}
+

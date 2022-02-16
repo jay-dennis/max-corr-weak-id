@@ -1,0 +1,75 @@
+
+\DeclareMathOperator{\plim}{plim}
+%\DeclareMathOperator{\argmin}{argmin}
+\DeclareMathOperator{\arginf}{arginf}
+\DeclareMathOperator{\argsup}{argsup}
+\DeclareMathOperator{\var}{var}
+
+\newcommand{\pmat}[1]{\begin{pmatrix} #1 \end{pmatrix}}
+\newcommand{\argmax}{\mathop{\rm argmax \ }\limits}
+\newcommand{\argmin}{\mathop{\rm argmin \ }\limits}
+%\newcommand{\var}{\mathop{\rm var }}
+\newcommand{\cov}{\mathop{\rm cov }}
+\newcommand{\vecop}{{\rm vec}}
+
+\newcommand{\Bb}{\mathbb{B}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Prob}{\mathbb{P}}
+
+\newcommand{\A}{\mathcal{A}}
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\E}{\mathcal{E}}
+\newcommand{\F}{\mathcal{F}}
+\newcommand{\G}{\mathcal{G}}
+\newcommand{\He}{\mathcal{H}}
+\newcommand{\Hs}{\mathcal{H}}
+\newcommand{\J}{\mathcal{J}}
+\newcommand{\Le}{\mathcal{L}}
+\newcommand{\M}{\mathcal{M}}
+\newcommand{\Ns}{\mathcal{N}}
+\newcommand{\Ss}{\mathcal{S}}
+\newcommand{\Tc}{\mathcal{T}}
+\newcommand{\W}{\mathcal{W}}
+\newcommand{\V}{\mathcal{V}}
+\newcommand{\X}{\mathcal{X}}
+\newcommand{\Y}{\mathcal{Y}}
+\newcommand{\Z}{\mathcal{Z}}
+
+\newcommand{\qv}[2]{\langle #1 \rangle_{#2}}
+\newcommand{\del}{\triangledown}
+\newcommand{\deriv}[1]{\frac{\partial}{\partial #1}}
+\newcommand{\derivn}[2]{\frac{\partial^{#2}}{\partial {#1}^{#2}}}
+\newcommand{\e}{\varepsilon}
+\newcommand{\T}{\tau}
+\newcommand{\Tv}{\vec{\tau}}
+\newcommand{\tod}{\xrightarrow{d}}
+\newcommand{\toP}{\xrightarrow{p}}
+\newcommand{\toas}{\xrightarrow{as}}
+
+\newcommand{\pcite}[1]{\citeauthor{#1}'s (\citeyear{#1})}
+\newcommand{\highlight}[1]{{\color{red} #1}}
+\newcommand\blfootnote[1]{%
+	\begingroup
+	\renewcommand\thefootnote{}\footnote{#1}%
+	\addtocounter{footnote}{-1}%
+	\endgroup
+}
+
+
+
+\usepackage{xcolor}
+\colorlet{red1}{red!80!blue!80}
+\colorlet{green1}{green!80!black}
+\colorlet{blue1}{blue!30}
+\def\bxht{\dimexpr1.5\baselineskip\relax}
+\def\bxwd{\dimexpr0.7in\relax}
+\newcommand\cbox[2][\bxwd]{\def\boxwidth{#1}\def\boxcolor{#2}\cboxX}
+\newcommand\cboxx[2][\bxwd]{\def\boxwidth{#1}\def\boxcolor{#2}\cboxXX}
+\newcommand\cboxX[2][white]{\colorbox{\boxcolor}{%
+  \rule[-.5\dimexpr\bxht-.7\ht\strutbox]{0pt}{\bxht}%
+  \parbox[c]{\boxwidth}{\small\centering\color{#1}#2}}}
+\newcommand\cboxXX[2][black]{\colorbox{\boxcolor}{%
+  \rule[-.5\dimexpr\bxht-.7\ht\strutbox]{0pt}{\bxht}%
+  \parbox[c]{\boxwidth}{\small\centering\color{#1}#2}}}

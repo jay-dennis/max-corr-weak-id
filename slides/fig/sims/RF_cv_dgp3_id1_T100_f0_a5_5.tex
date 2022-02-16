@@ -1,0 +1,47 @@
+ \begin{table}[H] 
+ \tiny 
+ \centering 
+\begin{tabular}{|c|c|c||c|c|c|c|} 
+\multicolumn{7}{c}{ Rejection Frequencies: Robust Tests, \highlight{Nearly Unidentified} } \\ 
+\multicolumn{7}{c}{ ARMA, $\alpha = 0.05$, $T=100$, $\beta = 0.030$, $J=500$ } \\ 
+% \multicolumn{5}{c}{ $T=100$, $\beta = 0.030$, $J=500$ } \\ 
+  \multicolumn{1}{c}{ } & \multicolumn{2}{c}{ $H_{0}$ True} & \multicolumn{4}{c}{ \highlight{$H_{0}$ False}} \\ 
+  \multicolumn{1}{c}{ } & \multicolumn{2}{c}{ Infeasible } & \multicolumn{2}{c}{ Infeasible } & \multicolumn{2}{c}{ \highlight{Feasible}} \\ 
+ \hline 
+% & iid, $\Le_n=5$ & GARCH(1,1), $\Le_n=5$ & AR(2), $\Le_n=5$ & MA(10), $\Le_n=10$   \\ 
+ & iid & GARCH(1,1) & AR(2) & MA(10) & AR(2) & MA(10)  \\ 
+ & $\Le_n=5$ & $\Le_n=5$ & $\Le_n=5$ & $\Le_n=10$ & $\Le_n=5$ & $\Le_n=10$   \\ 
+ \hline 
+ \highlight{MC ICS} &  0.0520 &  0.0500 &  0.8900 &  0.8120 & \highlight{0.5160} &  {\color{purple} 0.1508} \\ 
+ \highlight{LBQ ICS} &  0.0320 &  0.0360 &  0.8540 &  0.6280 & \highlight{0.4680} &  {\color{purple}0.1111}  \\ 
+ \highlight{sup LM ICS} &  0.0140 &  0.0380 &  0.8460 &  0.0420 & \highlight{0.4540} &  {\color{purple}0.0119}  \\ 
+%% CvM ICS &  0.0040 &  0.0080 &  0.8660 &  0.0140 & 0.0080 &  0.0000  \\ 
+ \hline 
+ MC S &  0.0860 &  0.0960 & & &  0.8980 &  0.8460  \\ 
+ LBQ S &  0.0760 &  0.0700 & & &  0.8760 &  0.7340  \\ 
+ sup LM S &  0.0880 &  0.0900 & & &  0.8720 &  0.1100  \\ 
+%% CvM S &  0.0480 &  0.0460 & & &  0.8840 &  0.1180  \\ 
+ \hline 
+\end{tabular}
+ \end{table}
+
+% MC ICS &   \\ 
+% LBQ ICS &   \\ 
+% sup LM ICS &   \\ 
+% CvM ICS &   \\ 
+% MC LF &  0.5160 &  0.1508 \\ 
+% LBQ LF &  0.4680 &  0.1111 \\ 
+% sup LM LF &  0.4540 &  0.0119 \\ 
+% CvM LF &  0.0080 &  0.0000 \\ 
+% MC S &  0.8240 &  0.8492 \\ 
+% LBQ S &  0.7540 &  0.6627 \\ 
+% sup LM S &  0.7340 &  0.0714 \\ 
+% CvM S &  0.0120 &  0.0079 \\ 
+% MC NoX &  0.7640 &  0.8175 \\ 
+% LBQ NoX &  0.6220 &  0.5595 \\ 
+% sup LM NoX &  0.5820 &  0.0437 \\ 
+% CvM NoX &  0.0000 &  0.0000 \\ 
+% MC W &  0.6580 &  0.1865 \\ 
+% LBQ W &  0.6360 &  0.1786 \\ 
+% sup LM W &  0.6580 &  0.1865 \\ 
+% CvM W &  0.6580 &  0.1865 \\ 
